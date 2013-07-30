@@ -40,6 +40,13 @@ namespace Slugify.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(System.ArgumentNullException))]
+        public void TestConstructorWithNullConfig()
+        {
+            SlugHelper helper = new SlugHelper(null);
+        }
+
+        [TestMethod]
         public void TestLoweCaseEnforcement()
         {
             String original = "AbCdE";

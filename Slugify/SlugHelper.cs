@@ -22,7 +22,10 @@ namespace Slugify
 
         public SlugHelper(Config config)
         {
-            _config = config;
+            if (config != null)
+                _config = config;
+            else
+                throw new ArgumentNullException("config", "can't be null use default config or empty construct.");
         }
 
         public String GenerateSlug(String str)
