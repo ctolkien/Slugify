@@ -16,7 +16,7 @@ namespace Slugify.Tests
             SlugHelper.Config config = new SlugHelper.Config();
             Assert.IsTrue(config.ForceLowerCase);
             Assert.IsTrue(config.CollapseWhiteSpace);
-            Assert.AreEqual(0, config.CharacterReplacements.Count);
+            Assert.AreEqual(1, config.CharacterReplacements.Count);
             Assert.IsNotNull(new Regex(config.DeniedCharactersRegex));
         }
 
@@ -25,11 +25,10 @@ namespace Slugify.Tests
         {
             KeyValuePair<string, string> defaultReplacement = new KeyValuePair<string, string>(" ","-");
             
-            SlugHelper.Config config = new SlugHelper.Config.Default();
+            SlugHelper.Config config = new SlugHelper.Config();
             
             Assert.AreEqual(1, config.CharacterReplacements.Count);
             Assert.AreEqual("-", config.CharacterReplacements[" "]);
-
         }
 
         [TestMethod]

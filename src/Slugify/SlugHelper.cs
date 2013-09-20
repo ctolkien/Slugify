@@ -15,7 +15,7 @@ namespace Slugify
         protected Config _config { get; set; }
 
         public SlugHelper() :
-            this(new SlugHelper.Config.Default())
+            this(new SlugHelper.Config())
         {
 
         }
@@ -89,17 +89,11 @@ namespace Slugify
             public Config()
             {
                 CharacterReplacements = new Dictionary<string, string>();
+                CharacterReplacements.Add(" ", "-");
+
                 ForceLowerCase = true;
                 CollapseWhiteSpace = true;
                 DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]";
-            }
-
-            public class Default : Config
-            {
-                public Default()
-                {
-                    CharacterReplacements.Add(" ", "-");
-                }
             }
         }
 

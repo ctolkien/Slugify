@@ -3,6 +3,16 @@ Slugify
 
 Simple [Slug / Clean URL](http://en.wikipedia.org/wiki/Slug_%28web_publishing%29#Slug) generator helper for Microsoft .NET framework.
 
+With default settings, you will get an **hyphenized**, **lowercase**, **alphanumeric** version of any string you please, with any [diacritics](http://en.wikipedia.org/wiki/Diacritic) removed and collapsed whitespace.
+
+In example, having:
+
+> a ambição cerra o coração
+
+You'll get:
+
+> a-ambicao-cerra-o-coracao
+
 Installation
 ------------
 
@@ -27,15 +37,15 @@ public class MyApp
    public static void Main()
    {
       SlugHelper helper = new SlugHelper();
-   
+
       String title = "OLA ke ase!";
-      
+
       String slug = helper.GenerateSlug(title); // "ola-ke-ase"
-      
-      Console.WriteLine(slug); 
+
+      Console.WriteLine(slug);
    }
 }
- 
+
 ```
 
 Configuration
@@ -66,11 +76,11 @@ SlugHelper helper = new SlugHelper(config);
 In fact, last values are so common they're the default ones! So last code could be rewritten as:
 
 ```csharp
-SlugHelper.Config config = new SlugHelper.Config.Default();
+SlugHelper.Config config = new SlugHelper.Config();
 SlugHelper helper = new SlugHelper(config);
 ```
 
-One more thing: _SlugHelper.Config.Default_ is used when you call the parameterless _SlugHelper_ constructor. Then ...
+One more thing: _SlugHelper.Config_ is used when you call the parameterless _SlugHelper_ constructor. Then ...
 
 ```csharp
 SlugHelper helper = new SlugHelper();
@@ -82,7 +92,11 @@ SlugHelper helper = new SlugHelper();
 
 #### CharacterReplacements
 
-Type: _Dictionary&lt;String, String&gt;_. Default: **Empty**.
+Type: _Dictionary&lt;String, String&gt;_. Default: [" ": "-"].
+
+Will replace the specified keys with their associated value.
+
+By default, will replace spaces with hyphens.
 
 #### ForceLowerCase
 
