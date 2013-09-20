@@ -7,11 +7,11 @@
     <authors>$author$</authors>
     <owners>$author$</owners>
     <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
-    <projectUrl>http://github.com/fcingolani/Slugify</projectUrl>
+    <projectUrl>http://fcingolani.github.io/Slugify/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2013</copyright>
+    <copyright>Federico Cingolani - Copyright 2013</copyright>
+    <summary>Simple Slug / Clean URL generator helper for Microsoft .NET framework.</summary>
     <tags>URL Slug Web</tags>
   </metadata>
 </package>
