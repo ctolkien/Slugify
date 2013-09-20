@@ -14,6 +14,8 @@ public class MyApp
 {
    public static void Main()
    {
+      SlugHelper helper = new SlugHelper();
+   
       String title = "OLA ke ase!";
       
       String slug = helper.GenerateSlug(title); // "ola-ke-ase"
