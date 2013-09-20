@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes></releaseNotes>
     <copyright>Federico Cingolani - Copyright 2013</copyright>
-    <summary>Simple Slug / Clean URL generator helper for Microsoft .NET framework.</summary>
+    <description>Simple Slug / Clean URL generator helper for Microsoft .NET framework.</description>
     <tags>URL Slug Web</tags>
   </metadata>
 </package>

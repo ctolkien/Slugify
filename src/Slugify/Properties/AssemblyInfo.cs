@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Slugify")]
-[assembly: AssemblyDescription("Allows you to create slugs (nice URLs).")]
+[assembly: AssemblyDescription("Simple Slug / Clean URL generator helper for Microsoft .NET framework.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Federico Cingolani")]
 [assembly: AssemblyProduct("Slugify")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCopyright("Federico Cingolani Copyright ©  2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.0.0.*")]
-[assembly: AssemblyFileVersion("0.0.0.0")]
+[assembly: AssemblyVersion("0.1.0.*")]
+[assembly: AssemblyFileVersion("0.1.0.0")]
