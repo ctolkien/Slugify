@@ -1,8 +1,8 @@
 {
   "version": "1.0.0-*",
   "title": "Slugify",
-  "description": "Simple Slug / Clean URL generator helper for Microsoft .NET framework.",
   "packOptions": {
+    "description": "Simple Slug / Clean URL generator helper for Microsoft .NET framework.",
     "licenseUrl": "http://opensource.org/licenses/MIT",
     "tags": [ "URL", "Slug", "Web" ],
     "projectUrl": "http://fcingolani.github.io/Slugify/"
