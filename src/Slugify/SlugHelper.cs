@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Slugify
 {
@@ -25,10 +22,10 @@ namespace Slugify
             if (config != null)
                 _config = config;
             else
-                throw new ArgumentNullException("config", "can't be null use default config or empty construct.");
+                throw new ArgumentNullException(nameof(config), "can't be null use default config or empty construct.");
         }
 
-        public String GenerateSlug(String str)
+        public string GenerateSlug(String str)
         {
             if (_config.ForceLowerCase)
                 str = str.ToLower();
@@ -41,13 +38,13 @@ namespace Slugify
             return str;
         }
 
-        protected String CleanWhiteSpace(String str, Boolean collapse)
+        protected string CleanWhiteSpace(String str, Boolean collapse)
         {
             return Regex.Replace(str, collapse ? @"\s+" : @"\s", " ");
         }
 
         // Thanks http://stackoverflow.com/a/249126!
-        protected String RemoveDiacritics(String str)
+        protected string RemoveDiacritics(String str)
         {
             string stFormD = str.Normalize(NormalizationForm.FormD);
             StringBuilder sb = new StringBuilder();
@@ -64,7 +61,7 @@ namespace Slugify
             return (sb.ToString().Normalize(NormalizationForm.FormC));
         }
 
-        protected String ApplyReplacements(String str, Dictionary<string, string> replacements)
+        protected string ApplyReplacements(string str, Dictionary<string, string> replacements)
         {
             StringBuilder sb = new StringBuilder(str);
 
@@ -74,7 +71,7 @@ namespace Slugify
             return sb.ToString();
         }
 
-        protected String DeleteCharacters(String str, String regex)
+        protected string DeleteCharacters(String str, String regex)
         {
             return Regex.Replace(str, regex, "");
         }
@@ -82,9 +79,9 @@ namespace Slugify
         public class Config
         {
             public Dictionary<String, String> CharacterReplacements { get; set; }
-            public Boolean ForceLowerCase { get; set; }
-            public Boolean CollapseWhiteSpace { get; set; }
-            public String DeniedCharactersRegex { get; set; }
+            public bool ForceLowerCase { get; set; }
+            public bool CollapseWhiteSpace { get; set; }
+            public string DeniedCharactersRegex { get; set; }
 
             public Config()
             {
