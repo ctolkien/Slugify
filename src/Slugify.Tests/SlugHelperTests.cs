@@ -5,10 +5,8 @@ using System.Collections.Generic;
 
 namespace Slugify.Tests
 {
-
     public class SlugHelperTest
     {
-
         [Fact]
         public void TestEmptyConfig()
         {

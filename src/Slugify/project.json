@@ -10,7 +10,6 @@
   "buildOptions": {
     "debugType": "portable"
   },
-
   "frameworks": {
     "net40": {
     },
