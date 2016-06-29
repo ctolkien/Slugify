@@ -14,7 +14,6 @@ namespace Slugify
         public SlugHelper() :
             this(new SlugHelper.Config())
         {
-
         }
 
         public SlugHelper(Config config)
@@ -25,7 +24,7 @@ namespace Slugify
                 throw new ArgumentNullException(nameof(config), "can't be null use default config or empty construct.");
         }
 
-        public string GenerateSlug(String str)
+        public string GenerateSlug(string str)
         {
             if (_config.ForceLowerCase)
                 str = str.ToLower();
@@ -38,16 +37,16 @@ namespace Slugify
             return str;
         }
 
-        protected string CleanWhiteSpace(String str, Boolean collapse)
+        protected string CleanWhiteSpace(string str, bool collapse)
         {
             return Regex.Replace(str, collapse ? @"\s+" : @"\s", " ");
         }
 
         // Thanks http://stackoverflow.com/a/249126!
-        protected string RemoveDiacritics(String str)
+        protected string RemoveDiacritics(string str)
         {
-            string stFormD = str.Normalize(NormalizationForm.FormD);
-            StringBuilder sb = new StringBuilder();
+            var stFormD = str.Normalize(NormalizationForm.FormD);
+            var sb = new StringBuilder();
 
             for (int ich = 0; ich < stFormD.Length; ich++)
             {
@@ -63,7 +62,7 @@ namespace Slugify
 
         protected string ApplyReplacements(string str, Dictionary<string, string> replacements)
         {
-            StringBuilder sb = new StringBuilder(str);
+            var sb = new StringBuilder(str);
 
             foreach (KeyValuePair<string, string> replacement in replacements)
                 sb.Replace(replacement.Key, replacement.Value);
@@ -71,14 +70,14 @@ namespace Slugify
             return sb.ToString();
         }
 
-        protected string DeleteCharacters(String str, String regex)
+        protected string DeleteCharacters(string str, string regex)
         {
             return Regex.Replace(str, regex, "");
         }
 
         public class Config
         {
-            public Dictionary<String, String> CharacterReplacements { get; set; }
+            public Dictionary<string, string> CharacterReplacements { get; set; }
             public bool ForceLowerCase { get; set; }
             public bool CollapseWhiteSpace { get; set; }
             public string DeniedCharactersRegex { get; set; }
