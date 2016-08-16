@@ -33,7 +33,7 @@ namespace Slugify
             str = ApplyReplacements(str, _config.CharacterReplacements);
             str = RemoveDiacritics(str);
             str = DeleteCharacters(str, _config.DeniedCharactersRegex);
-
+            str = str.Replace("--", "-");
             return str;
         }
 

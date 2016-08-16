@@ -128,5 +128,16 @@ namespace Slugify.Tests
             }
         }
 
+        [Fact]
+        public void TestNotReturningMultipleDashes()
+        {
+            var original = "foo & bar";
+            var expected = "foo-bar";
+
+            var helper = new SlugHelper();
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
     }
 }
