@@ -3,7 +3,7 @@ Slugify
 
 | Platform | Status|
 |---------|-------|
-|Windows  | [![Build status](https://img.shields.io/appveyor/ci/soda-digital/slugify.svg?maxAge=2000)](https://ci.appveyor.com/project/Soda-Digital/tinypng) |
+|Windows  | [![Build status](https://img.shields.io/appveyor/ci/soda-digital/slugify.svg?maxAge=2000)](https://ci.appveyor.com/project/Soda-Digital/slugify) |
 |Linux/OSX| [![Build Status](https://img.shields.io/travis/ctolkien/Slugify.svg?maxAge=2000)](https://travis-ci.org/ctolkien/Slugify) |
 
 Simple [Slug / Clean URL](http://en.wikipedia.org/wiki/Slug_%28web_publishing%29#Slug) generator helper for Microsoft .NET framework.
