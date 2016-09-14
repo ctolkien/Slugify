@@ -13,19 +13,17 @@ namespace Slugify.Tests
             SlugHelper.Config config = new SlugHelper.Config();
             Assert.True(config.ForceLowerCase);
             Assert.True(config.CollapseWhiteSpace);
-            Assert.Equal(1, config.CharacterReplacements.Count);
+            Assert.Equal(1, config.StringReplacements.Count);
             Assert.NotNull(new Regex(config.DeniedCharactersRegex));
         }
 
         [Fact]
         public void TestDefaultConfig()
         {
-            KeyValuePair<string, string> defaultReplacement = new KeyValuePair<string, string>(" ","-");
-            
             SlugHelper.Config config = new SlugHelper.Config();
             
-            Assert.Equal(1, config.CharacterReplacements.Count);
-            Assert.Equal("-", config.CharacterReplacements[" "]);
+            Assert.Equal(1, config.StringReplacements.Count);
+            Assert.Equal("-", config.StringReplacements[" "]);
         }
 
         [Fact]
@@ -65,6 +63,20 @@ namespace Slugify.Tests
         }
 
         [Fact]
+        public void TestWhiteSpaceNotCollapsing()
+        {
+            var original = "a  b    \n  c   \t    d";
+            var expected = "a-b-c-d";
+
+            var helper = new SlugHelper(new SlugHelper.Config
+            {
+                CollapseWhiteSpace = false
+            });
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
         public void TestDiacriticRemoval()
         {
             var withDiacritics = "ñáîùëÓ";
@@ -93,9 +105,9 @@ namespace Slugify.Tests
             var expected = "xyzde";
 
             var config = new SlugHelper.Config();
-            config.CharacterReplacements.Add("a", "x");
-            config.CharacterReplacements.Add("b", "y");
-            config.CharacterReplacements.Add("c", "z");
+            config.StringReplacements.Add("a", "x");
+            config.StringReplacements.Add("b", "y");
+            config.StringReplacements.Add("c", "z");
 
             var helper = new SlugHelper(config);
 
@@ -118,12 +130,51 @@ namespace Slugify.Tests
         }
 
         [Fact]
-        public void TestNotReturningMultipleDashes()
+        public void TestConfigForCollapsingDashes()
         {
             var original = "foo & bar";
             var expected = "foo-bar";
 
             var helper = new SlugHelper();
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestConfigForCollapsingDashesWithMoreThanTwoDashes()
+        {
+            var original = "foo & bar & & & Jazz&&&&&&&&";
+            var expected = "foo-bar-jazz";
+
+            var helper = new SlugHelper();
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestConfigForNotCollapsingDashes()
+        {
+            var original = "foo & bar";
+            var expected = "foo--bar";
+
+            var helper = new SlugHelper(new SlugHelper.Config
+            {
+                CollapseDashes = false
+            });
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestConfigForTrimming()
+        {
+            var original = "  foo & bar  ";
+            var expected = "foo-bar";
+
+            var helper = new SlugHelper(new SlugHelper.Config
+            {
+                TrimWhitespace = true
+            });
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }

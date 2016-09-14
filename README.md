@@ -1,5 +1,7 @@
-Slugify
+Slugify Core
 =======
+
+### This is a fork of the original project here: [https://github.com/fcingolani/Slugify](https://github.com/fcingolani/Slugify). This has been updated for .Net Core Support
 
 | Platform | Status|
 |---------|-------|
@@ -8,7 +10,7 @@ Slugify
 
 Simple [Slug / Clean URL](http://en.wikipedia.org/wiki/Slug_%28web_publishing%29#Slug) generator helper for Microsoft .NET framework.
 
-With default settings, you will get an **hyphenized**, **lowercase**, **alphanumeric** version of any string you please, with any [diacritics](http://en.wikipedia.org/wiki/Diacritic) removed and collapsed whitespace.
+With default settings, you will get an **hyphenized**, **lowercase**, **alphanumeric** version of any string you please, with any [diacritics](http://en.wikipedia.org/wiki/Diacritic) removed and collapsed whitespace, collapsed dashes and trimmed whitespace.
 
 In example, having:
 
@@ -21,10 +23,10 @@ You'll get:
 Installation
 ------------
 
-You can get the [Slugify NuGet package](http://www.nuget.org/packages/Slugify/) by running the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
+You can get the [Slugify NuGet package](http://www.nuget.org/packages/SlugifyCore/) by running the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
 
 ```
-PM> Install-Package Slugify
+PM> Install-Package SlugifyCore
 ```
 
 
@@ -56,17 +58,23 @@ public class MyApp
 Configuration
 -------------
 
-You can provide a _SlugHelper.Config_ instance to _SlugHelper_'s constructor to customize the helper's behavior, like so:
+You can provide a _SlugHelper.Config_ instance to _SlugHelper_'s constructor to customize the helper's behavior:
 
 ```csharp
 // Creating a configuration object
 SlugHelper.Config config = new SlugHelper.Config();
 
-// Replace spaces with a hyphens
-config.CharacterReplacements.Add(" ", "-");
+// Replace spaces with a dash
+config.StringReplacements.Add(" ", "-");
 
 // We want a lowercase Slug
 config.ForceLowerCase = true;
+
+// Will collapse multiple seqential dashes down to a single one
+config.CollapseDashes = true;
+
+// Will trim leading and trailing whitespace
+config.TrimWhitespace = true;
 
 // Colapse consecutive whitespace chars into one
 config.CollapseWhiteSpace = true;

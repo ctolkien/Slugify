@@ -6,34 +6,43 @@ using System.Text.RegularExpressions;
 
 namespace Slugify
 {
-
     public class SlugHelper
     {
         protected Config _config { get; set; }
 
-        public SlugHelper() :
-            this(new SlugHelper.Config())
-        {
-        }
+        public SlugHelper() : this(new Config()) { }
 
         public SlugHelper(Config config)
         {
-            if (config != null)
-                _config = config;
-            else
-                throw new ArgumentNullException(nameof(config), "can't be null use default config or empty construct.");
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
+            }
+            _config = config;
         }
 
         public string GenerateSlug(string str)
         {
             if (_config.ForceLowerCase)
+            {
                 str = str.ToLower();
+            }
+
+            if (_config.TrimWhitespace)
+            {
+                str = str.Trim();
+            }
 
             str = CleanWhiteSpace(str, _config.CollapseWhiteSpace);
-            str = ApplyReplacements(str, _config.CharacterReplacements);
+            str = ApplyReplacements(str, _config.StringReplacements);
             str = RemoveDiacritics(str);
             str = DeleteCharacters(str, _config.DeniedCharactersRegex);
-            str = str.Replace("--", "-");
+            
+            if (_config.CollapseDashes)
+            {
+                str = Regex.Replace(str, "--+", "-");
+            }
+
             return str;
         }
 
@@ -65,7 +74,9 @@ namespace Slugify
             var sb = new StringBuilder(str);
 
             foreach (KeyValuePair<string, string> replacement in replacements)
-                sb.Replace(replacement.Key, replacement.Value);
+            {
+                sb = sb.Replace(replacement.Key, replacement.Value);
+            }
 
             return sb.ToString();
         }
@@ -77,19 +88,17 @@ namespace Slugify
 
         public class Config
         {
-            public Dictionary<string, string> CharacterReplacements { get; set; }
-            public bool ForceLowerCase { get; set; }
-            public bool CollapseWhiteSpace { get; set; }
-            public string DeniedCharactersRegex { get; set; }
+            public Dictionary<string, string> StringReplacements { get; set; }
+            public bool ForceLowerCase { get; set; } = true;
+            public bool CollapseWhiteSpace { get; set; } = true;
+            public string DeniedCharactersRegex { get; set; } = @"[^a-zA-Z0-9\-\._]";
+            public bool CollapseDashes { get; set; } = true;
+            public bool TrimWhitespace { get; set; } = true;
 
             public Config()
             {
-                CharacterReplacements = new Dictionary<string, string>();
-                CharacterReplacements.Add(" ", "-");
-
-                ForceLowerCase = true;
-                CollapseWhiteSpace = true;
-                DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]";
+                StringReplacements = new Dictionary<string, string>();
+                StringReplacements.Add(" ", "-");
             }
         }
 
