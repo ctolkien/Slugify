@@ -18,10 +18,17 @@ build_script:
 - dotnet pack -c %CONFIGURATION% -o .\artifacts .\src\Slugify\project.json
 
 test_script:
-- cmd: dotnet test -c %CONFIGURATION% --no-build .\src\Slugify.Tests\
+- cmd: dotnet test -c %CONFIGURATION% --no-build .\tests\Slugify.Tests\
 
 artifacts:
 - path: artifacts\**\*.*
-
+deploy:
+- provider: NuGet
+  api_key:
+    secure: Gerln5x/jQ3CsCjXe76zQuP2Rjh12sKBH2wj88LIpt1IQym1+6MlFVWmvx5j+KSw
+  skip_symbols: false
+  artifact: /.*\.nupkg/
+  on:
+    branch: release
 cache:
 - '%USERPROFILE%\.nuget\packages'    
