@@ -1,0 +1,28 @@
+version: 1.1.{build}
+os: Visual Studio 2015
+configuration: Release
+pull_requests:
+  do_not_increment_build_number: true
+
+init:
+- ps: $Env:LABEL = $Env:APPVEYOR_BUILD_NUMBER
+- ps: Set DOTNET_SKIP_FIRST_TIME_EXPERIENCE
+- ps: iex ((new-object net.webclient).DownloadString('https://gist.githubusercontent.com/PureKrome/0f79e25693d574807939/raw/f5b40256fc2ca77d49f1c7773d28406152544c1e/appveyor-build-info.ps'))
+
+build:
+  verbosity: minimal
+  publish_nuget: true
+  
+build_script:
+- dotnet restore -v Minimal
+- dotnet build **\project.json -c %CONFIGURATION%
+- dotnet pack -c %CONFIGURATION% -o .\artifacts .\src\TinyPNG\project.json
+
+test_script:
+- cmd: dotnet test -c %CONFIGURATION% --no-build .\tests\TinyPng.Tests\
+
+artifacts:
+- path: artifacts\**\*.*
+
+cache:
+- '%USERPROFILE%\.nuget\packages'    
