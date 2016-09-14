@@ -102,30 +102,19 @@ namespace Slugify.Tests
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
 
-        [Fact]
-        public void TestFullFunctionality()
+        [Theory]
+        [InlineData("E¢Ðƕtoy  mÚÄ´¨ss¨sïuy   !!!!!  Pingüiño", "etoy-muasssiuy-pinguino")]
+        [InlineData("QWE dfrewf# $%&!! asd", "qwe-dfrewf-asd")]
+        [InlineData("You can't have any pudding if you don't eat your meat!", "you-cant-have-any-pudding-if-you-dont-eat-your-meat")]
+        [InlineData("El veloz murciélago hindú", "el-veloz-murcielago-hindu")]
+        [InlineData("Médicos sin medicinas medican meditando", "medicos-sin-medicinas-medican-meditando")]
+
+        public void TestFullFunctionality(string input, string output)
         {
             var helper = new SlugHelper();
-            var tests = new Dictionary<string, string>();
-            
-            tests.Add(  "E¢Ðƕtoy  mÚÄ´¨ss¨sïuy   !!!!!  Pingüiño",
-                        "etoy-muasssiuy--pinguino");
 
-            tests.Add(  "QWE dfrewf# $%&!! asd",
-                        "qwe-dfrewf--asd");
-            
-            tests.Add(  "You can't have any pudding if you don't eat your meat!",
-                        "you-cant-have-any-pudding-if-you-dont-eat-your-meat");
-
-            tests.Add(  "El veloz murciélago hindú",
-                        "el-veloz-murcielago-hindu");
-
-            tests.Add(  "Médicos sin medicinas medican meditando",
-                        "medicos-sin-medicinas-medican-meditando");
-
-            foreach(KeyValuePair<string, string> test in tests){
-                Assert.Equal(test.Value, helper.GenerateSlug(test.Key));
-            }
+            Assert.Equal(output, helper.GenerateSlug(input));
+          
         }
 
         [Fact]
