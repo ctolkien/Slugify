@@ -16,10 +16,10 @@ build:
 build_script:
 - dotnet restore -v Minimal
 - dotnet build **\project.json -c %CONFIGURATION%
-- dotnet pack -c %CONFIGURATION% -o .\artifacts .\src\TinyPNG\project.json
+- dotnet pack -c %CONFIGURATION% -o .\artifacts .\src\Slugify\project.json
 
 test_script:
-- cmd: dotnet test -c %CONFIGURATION% --no-build .\tests\TinyPng.Tests\
+- cmd: dotnet test -c %CONFIGURATION% --no-build .\src\Slugify.Tests\
 
 artifacts:
 - path: artifacts\**\*.*
