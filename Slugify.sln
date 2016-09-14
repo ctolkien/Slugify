@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Slugify", "Slugify\Slugify.xproj", "{876D62BE-723C-4666-BEAD-68BD7DC7E5ED}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Slugify", "src\Slugify\Slugify.xproj", "{876D62BE-723C-4666-BEAD-68BD7DC7E5ED}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Slugify.Tests", "Slugify.Tests\Slugify.Tests.xproj", "{B5320FC8-5A90-4B0F-84B4-BBC8774F27B8}"
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Slugify.Tests", "tests\Slugify.Tests\Slugify.Tests.xproj", "{B5320FC8-5A90-4B0F-84B4-BBC8774F27B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
