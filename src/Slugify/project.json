@@ -12,7 +12,8 @@
     "repository": {
       "type": "git",
       "url": "https://github.com/ctolkien/Slugify"
-    }
+    },
+    "releaseNotes": "2.1.0 - First release of this fork."
   },
   "buildOptions": {
     "debugType": "portable"
