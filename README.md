@@ -1,6 +1,13 @@
 Slugify
 =======
 
+| Platform | Status|
+|---------|-------|
+|Windows  | [![Build status](https://img.shields.io/appveyor/ci/soda-digital/slugify.svg?maxAge=2000)](https://ci.appveyor.com/project/Soda-Digital/tinypng) |
+
+
+
+
 Simple [Slug / Clean URL](http://en.wikipedia.org/wiki/Slug_%28web_publishing%29#Slug) generator helper for Microsoft .NET framework.
 
 With default settings, you will get an **hyphenized**, **lowercase**, **alphanumeric** version of any string you please, with any [diacritics](http://en.wikipedia.org/wiki/Diacritic) removed and collapsed whitespace.
