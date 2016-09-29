@@ -23,10 +23,10 @@ You'll get:
 Installation
 ------------
 
-You can get the [Slugify NuGet package](http://www.nuget.org/packages/SlugifyCore/) by running the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
+You can get the [Slugify NuGet package](https://www.nuget.org/packages/Slugify.Core/) by running the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
 
 ```
-PM> Install-Package SlugifyCore
+PM> Install-Package Slugify.Core
 ```
 
 
