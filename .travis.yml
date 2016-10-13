@@ -2,5 +2,7 @@ notifications:
   email: never
 language: csharp
 solution: Slugify.sln
+sudo: required
+dist: trusty
 mono: none
 dotnet: 1.0.0-preview2-003131
