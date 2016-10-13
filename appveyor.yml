@@ -40,4 +40,4 @@ deploy:
   on:
     branch: release
 cache:
-- '%USERPROFILE%\.nuget\packages'    
+- '%USERPROFILE%\.nuget\packages'
