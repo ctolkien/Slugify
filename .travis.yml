@@ -2,9 +2,4 @@ notifications:
   email: never
 language: csharp
 dist: trusty
-matrix:
-  include:
-    - dotnet: 1.0.0-preview2-003121
-      mono: none
-      env: DOTNETCORE=1
-    - mono: latest
+dotnet: 1.0.0-preview2-003131
