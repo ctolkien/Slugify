@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.1.1",
   "title": "Slugify Core",
   "packOptions": {
     "description": "Simple Slug / Clean URL generator helper for Microsoft .NET framework.",
@@ -13,7 +13,7 @@
       "type": "git",
       "url": "https://github.com/ctolkien/Slugify"
     },
-    "releaseNotes": "2.1.0 - First release of this fork."
+    "releaseNotes": "2.1.1 - Minor tweaks"
   },
   "buildOptions": {
     "debugType": "portable"

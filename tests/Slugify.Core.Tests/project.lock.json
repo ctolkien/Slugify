@@ -2540,7 +2540,21 @@
           "lib/netstandard1.1/xunit.runner.utility.dotnet.dll": {}
         }
       },
-      "Slugify.Core/2.1.0": {
+      "Slugify/2.1.1": {
+        "type": "project",
+        "framework": ".NETStandard,Version=v1.3",
+        "dependencies": {
+          "NETStandard.Library": "1.6.0",
+          "System.Globalization.Extensions": "4.0.1"
+        },
+        "compile": {
+          "netstandard1.3/Slugify.dll": {}
+        },
+        "runtime": {
+          "netstandard1.3/Slugify.dll": {}
+        }
+      },
+      "Slugify.Core/2.1.1": {
         "type": "project",
         "framework": ".NETStandard,Version=v1.3",
         "dependencies": {
@@ -7530,7 +7544,12 @@
         "xunit.runner.utility.nuspec"
       ]
     },
-    "Slugify.Core/2.1.0": {
+    "Slugify/2.1.1": {
+      "type": "project",
+      "path": "../../src/Slugify.Core/project.json",
+      "msbuildProject": "../../src/Slugify.Core/Slugify.xproj"
+    },
+    "Slugify.Core/2.1.1": {
       "type": "project",
       "path": "../../src/Slugify.Core/project.json"
     }
