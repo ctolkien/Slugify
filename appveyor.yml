@@ -1,5 +1,5 @@
 os: Visual Studio 2015
-configuration: Release
+configuration: Debug
 pull_requests:
   do_not_increment_build_number: true
 init:
@@ -19,13 +19,11 @@ before_test:
 - cmd: choco install opencover.portable
 
 test_script:
-- cmd: cd .\tests\Slugify.Core.Tests\
-- cmd: opencover.console -target:"dotnet.exe" -targetargs:"test -c %CONFIGURATION% --no-build" -register:user -filter:"+[*]* -[xunit*]*" -output:"../../coverage.xml" -oldstyle -skipautoprops
+- cmd: opencover.console -target:"dotnet.exe" -targetargs:"test .\tests\Slugify.Core.Tests\ -c %CONFIGURATION% --no-build" -register:user -filter:"+[*]* -[xunit*]*" -output:"coverage.xml" -oldstyle -skipautoprops
 
 after_test:
 - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
 - pip install codecov
-- cd ../..
 - codecov -f "coverage.xml" -X gcov
 
 artifacts:
