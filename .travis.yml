@@ -4,7 +4,7 @@ language: csharp
 solution: Slugify.sln
 sudo: required
 dist: trusty
-mono: none
+mono: 4.0.5
 dotnet: 1.0.0-preview2-003131
 script:
 - dotnet restore -v Minimal
