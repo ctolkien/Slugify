@@ -1,9 +1,12 @@
 notifications:
   email: never
 language: csharp
-solution: Slugify.sln
 sudo: required
 dist: trusty
+os:
+  - linux
+  - osx
+osx_image: xcode7.1
 mono: 4.0.5
 dotnet: 1.0.0-preview2-003131
 script:
