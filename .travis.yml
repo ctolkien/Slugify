@@ -8,4 +8,4 @@ mono: none
 dotnet: 1.0.0-preview2-003131
 script:
 - dotnet restore -v Minimal
-- dotnet build **\project.json -c Release
+- dotnet build **/project.json -c Release
