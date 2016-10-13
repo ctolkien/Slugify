@@ -8,7 +8,7 @@ Slugify Core
 |Windows  | [![Build status](https://img.shields.io/appveyor/ci/soda-digital/slugify.svg?maxAge=2000)](https://ci.appveyor.com/project/Soda-Digital/slugify) |
 |Linux/OSX| [![Build Status](https://img.shields.io/travis/ctolkien/Slugify.svg?maxAge=2000)](https://travis-ci.org/ctolkien/Slugify) |
 
-[![codecov](https://codecov.io/gh/ctolkien/Slugify/branch/master/graph/badge.svg)](https://codecov.io/gh/ctolkien/TinyPNG)
+[![codecov](https://codecov.io/gh/ctolkien/Slugify/branch/master/graph/badge.svg)](https://codecov.io/gh/ctolkien/Slugify)
 ![Version](https://img.shields.io/nuget/v/slugify.core.svg?maxAge=2000)
 [![license](https://img.shields.io/github/license/ctolkien/Slugify.svg?maxAge=2592000)]()
 
