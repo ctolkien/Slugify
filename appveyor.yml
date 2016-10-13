@@ -20,7 +20,6 @@ before_test:
 - cmd: choco install opencover.portable
 
 test_script:
-- cmd: cd .\tests\TinyPng.Tests\ 
 - cmd: opencover.console -target:"dotnet.exe" -targetargs:"test tests/Slugify.Core.Tests/ -c %CONFIGURATION% --no-build" -register:user -filter:"+[*]* -[xunit*]*" -output:"coverage.xml" -oldstyle -skipautoprops
 
 after_test:
