@@ -15,9 +15,6 @@
     },
     "releaseNotes": "2.1.0 - Minor tweaks"
   },
-  "buildOptions": {
-    "debugType": "portable"
-  },
   "frameworks": {
     "net40": {
     },
