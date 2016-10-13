@@ -1,5 +1,5 @@
 {
-  "projects": [ "src", "tests" ],
+  "projects": [ "src/Slugify.Core", "tests/Slugify.Core.Tests" ],
   "sdk": {
     "version": "1.0.0-preview2-003121"
   }
