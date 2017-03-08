@@ -1,4 +1,5 @@
 before_install:
+  - bash <(curl -s https://dot.net/v1/dotnet-install.sh)
   - sudo apt-get install dotnet-dev-1.0.1
 notifications:
   email: never
