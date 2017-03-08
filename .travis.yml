@@ -1,4 +1,8 @@
-languge: null
+languge: null #this doesn't work, uses ruby by default
+notifications:
+  email: never
+sudo: required
+dist: trusty
 before_install:
   - sudo apt-get install libunwind8
   - wget https://dot.net/v1/dotnet-install.sh
@@ -6,10 +10,6 @@ before_install:
   - ./dotnet-install.sh --verbose
   - PATH=/home/travis/.dotnet:$PATH
   - export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 
-notifications:
-  email: never
-sudo: required
-dist: trusty
 script:
   - dotnet restore -v Minimal
   - dotnet build src/Slugify.Core/ -c Release -f netstandard1.3
