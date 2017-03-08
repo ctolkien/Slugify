@@ -1,4 +1,5 @@
 language: csharp
+install: true
 before_install:
   - sudo apt-get install libunwind8
   - wget https://dot.net/v1/dotnet-install.sh
@@ -8,8 +9,7 @@ notifications:
   email: never
 sudo: required
 dist: trusty
-dotnet: 1.0.0
 script:
-- dotnet restore -v Minimal
-- dotnet build src/Slugify.Core/ -c Release -f netstandard1.3
-- dotnet test tests/Slugify.Core.Tests/Slugify.Core.Tests.csproj
+  - dotnet restore -v Minimal
+  - dotnet build src/Slugify.Core/ -c Release -f netstandard1.3
+  - dotnet test tests/Slugify.Core.Tests/Slugify.Core.Tests.csproj
