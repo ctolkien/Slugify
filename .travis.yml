@@ -1,6 +1,7 @@
+before_install:
+  - sudo apt-get install dotnet-dev-1.0.1
 notifications:
   email: never
-language: csharp
 sudo: required
 dist: trusty
 dotnet: 1.0.0
