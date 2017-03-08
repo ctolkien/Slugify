@@ -3,9 +3,8 @@ notifications:
 language: csharp
 sudo: required
 dist: trusty
-mono: 4.0.5
 dotnet: 1.0.0
 script:
 - dotnet restore -v Minimal
-- dotnet build src/Slugify.Core/ -c Release
+- dotnet build src/Slugify.Core/ -c Release -f netstandard1.3
 - dotnet test tests/Slugify.Core.Tests/Slugify.Core.Tests.csproj
