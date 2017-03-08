@@ -7,5 +7,5 @@ mono: 4.0.5
 dotnet: 1.0.0
 script:
 - dotnet restore -v Minimal
-- dotnet build **/project.json -c Release
-- dotnet test tests/Slugify.Core.Tests
+- dotnet build src/Slugify.Core/ -c Release
+- dotnet test tests/Slugify.Core.Tests/Slugify.Core.Tests.csproj
