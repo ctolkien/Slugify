@@ -1,11 +1,16 @@
+languge: null #this doesn't work, uses ruby by default
 notifications:
   email: never
-language: csharp
 sudo: required
 dist: trusty
-mono: 4.0.5
-dotnet: 1.0.0-preview2-003131
+before_install:
+  - sudo apt-get install libunwind8
+  - wget https://dot.net/v1/dotnet-install.sh
+  - chmod a+x dotnet-install.sh
+  - ./dotnet-install.sh --verbose
+  - PATH=/home/travis/.dotnet:$PATH
+  - export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 
 script:
-- dotnet restore -v Minimal
-- dotnet build **/project.json -c Release
-- dotnet test tests/Slugify.Core.Tests
+  - dotnet restore -v Minimal
+  - dotnet build src/Slugify.Core/ -c Release -f netstandard1.3
+  - dotnet test tests/Slugify.Core.Tests/Slugify.Core.Tests.csproj
