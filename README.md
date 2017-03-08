@@ -6,7 +6,11 @@ Slugify Core
 | Platform | Status|
 |---------|-------|
 |Windows  | [![Build status](https://img.shields.io/appveyor/ci/soda-digital/slugify.svg?maxAge=2000)](https://ci.appveyor.com/project/Soda-Digital/slugify) |
-|Linux/OSX| [![Build Status](https://img.shields.io/travis/ctolkien/Slugify.svg?maxAge=2000)](https://travis-ci.org/ctolkien/Slugify) |
+|Linux| [![Build Status](https://img.shields.io/travis/ctolkien/Slugify.svg?maxAge=2000)](https://travis-ci.org/ctolkien/Slugify) |
+
+[![codecov](https://codecov.io/gh/ctolkien/Slugify/branch/master/graph/badge.svg)](https://codecov.io/gh/ctolkien/Slugify)
+![Version](https://img.shields.io/nuget/v/slugify.core.svg?maxAge=2000)
+[![license](https://img.shields.io/github/license/ctolkien/Slugify.svg?maxAge=2592000)]()
 
 Simple [Slug / Clean URL](http://en.wikipedia.org/wiki/Slug_%28web_publishing%29#Slug) generator helper for Microsoft .NET framework.
 
@@ -23,10 +27,10 @@ You'll get:
 Installation
 ------------
 
-You can get the [Slugify NuGet package](http://www.nuget.org/packages/SlugifyCore/) by running the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
+You can get the [Slugify NuGet package](https://www.nuget.org/packages/Slugify.Core/) by running the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console):
 
 ```
-PM> Install-Package SlugifyCore
+PM> Install-Package Slugify.Core
 ```
 
 
@@ -86,7 +90,7 @@ config.DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]";
 SlugHelper helper = new SlugHelper(config);
 ```
 
-In fact, last values are so common they're the default ones! So last code could be rewritten as:
+In fact, the above values are so common they're the default ones! So last code could be rewritten as:
 
 ```csharp
 SlugHelper.Config config = new SlugHelper.Config();
@@ -128,6 +132,12 @@ Setting it to true will replace consecutive whitespace characters by just one sp
 Type: _String_. Default: **[^a-zA-Z0-9\-\._]**.
 
 Any character matching this Regular Expression will be deleted from the resulting string.
+
+#### CollapseDashes
+
+Type: _Boolean_. Default: **true**
+
+This will condense multiple dashes (e.g. `foo---bar`) down to a single dash (`foo-bar`). This is useful to avoid scenarios like `foo & bar` becoming `foo--bar`.
 
 License
 -------
