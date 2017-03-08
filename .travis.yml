@@ -4,13 +4,14 @@ before_install:
   - wget https://dot.net/v1/dotnet-install.sh
   - chmod a+x dotnet-install.sh
   - ./dotnet-install.sh
+  - $PATH
 notifications:
   email: never
 sudo: required
 dist: trusty
 script:
-  - cd .dotnet
-  - ls
+  - $PATH
+  - ls -A
   - dotnet restore -v Minimal
   - dotnet build src/Slugify.Core/ -c Release -f netstandard1.3
   - dotnet test tests/Slugify.Core.Tests/Slugify.Core.Tests.csproj
