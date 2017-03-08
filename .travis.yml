@@ -9,6 +9,8 @@ notifications:
 sudo: required
 dist: trusty
 script:
+  - cd .dotnet
+  - ls
   - dotnet restore -v Minimal
   - dotnet build src/Slugify.Core/ -c Release -f netstandard1.3
   - dotnet test tests/Slugify.Core.Tests/Slugify.Core.Tests.csproj
