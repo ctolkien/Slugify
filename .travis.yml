@@ -1,7 +1,8 @@
 before_install:
   - sudo apt-get install libunwind8
-  - bash <(curl -s https://dot.net/v1/dotnet-install.sh)
-  - sudo apt-get install dotnet-dev-1.0.1
+  - wget https://dot.net/v1/dotnet-install.sh
+  - chmod a+x dotnet-install.sh
+  - . dotnet-install.sh
 notifications:
   email: never
 sudo: required
