@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
-    <VersionPrefix>2.1.0</VersionPrefix>
+    <VersionPrefix>2.2.0</VersionPrefix>
     <TargetFrameworks>net40;netstandard1.3</TargetFrameworks>
     <AssemblyName>Slugify.Core</AssemblyName>
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
-    <PackageReleaseNotes>2.1.0 - Minor tweaks</PackageReleaseNotes>
+    <PackageReleaseNotes>2.2.0 - Minor tweaks</PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ctolkien/Slugify</PackageProjectUrl>
     <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
