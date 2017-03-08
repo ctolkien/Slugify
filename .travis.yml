@@ -3,7 +3,8 @@ before_install:
   - sudo apt-get install libunwind8
   - wget https://dot.net/v1/dotnet-install.sh
   - chmod a+x dotnet-install.sh
-  - source dotnet-install.sh --verbose
+  - ./dotnet-install.sh --verbose
+  - PATH=/home/travis/.dotnet:$PATH
   - echo $PATH
   - pwd
 notifications:
