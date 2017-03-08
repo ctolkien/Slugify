@@ -1,4 +1,4 @@
-os: Visual Studio 2015
+os: Visual Studio 2017 RC
 configuration: Release
 pull_requests:
   do_not_increment_build_number: true
@@ -12,8 +12,8 @@ build:
   
 build_script:
 - dotnet restore -v Minimal
-- dotnet build **\project.json -c %CONFIGURATION%
-- dotnet pack -c %CONFIGURATION% -o .\artifacts .\src\Slugify.Core\project.json
+- dotnet build src\Slugify.Core\ -c %CONFIGURATION%
+- dotnet pack -c %CONFIGURATION% -o .\artifacts .\src\Slugify.Core\Slugify.Core.csproj
 
 before_test:
 - cmd: choco install opencover.portable

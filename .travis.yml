@@ -4,7 +4,7 @@ language: csharp
 sudo: required
 dist: trusty
 mono: 4.0.5
-dotnet: 1.0.0-preview2-003131
+dotnet: 1.0.0
 script:
 - dotnet restore -v Minimal
 - dotnet build **/project.json -c Release
