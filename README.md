@@ -90,7 +90,7 @@ config.DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]";
 SlugHelper helper = new SlugHelper(config);
 ```
 
-In fact, last values are so common they're the default ones! So last code could be rewritten as:
+In fact, the above values are so common they're the default ones! So last code could be rewritten as:
 
 ```csharp
 SlugHelper.Config config = new SlugHelper.Config();
@@ -132,6 +132,12 @@ Setting it to true will replace consecutive whitespace characters by just one sp
 Type: _String_. Default: **[^a-zA-Z0-9\-\._]**.
 
 Any character matching this Regular Expression will be deleted from the resulting string.
+
+#### CollapseDashes
+
+Type: _Boolean_. Default: **true**
+
+This will condense multiple dashes (e.g. `foo---bar`) down to a single dash (`foo-bar`). This is useful to avoid scenarios like `foo & bar` becoming `foo--bar`.
 
 License
 -------

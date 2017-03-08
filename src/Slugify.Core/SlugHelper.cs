@@ -14,11 +14,7 @@ namespace Slugify
 
         public SlugHelper(Config config)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
-            }
-            _config = config;
+            _config = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
         }
 
         public string GenerateSlug(string str)
@@ -97,8 +93,10 @@ namespace Slugify
 
             public Config()
             {
-                StringReplacements = new Dictionary<string, string>();
-                StringReplacements.Add(" ", "-");
+                StringReplacements = new Dictionary<string, string>
+                {
+                    { " ", "-" }
+                };
             }
         }
 
