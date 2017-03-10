@@ -1,9 +1,7 @@
 language: csharp
-sudo: required
 dist: trusty
 notifications:
   email: never
-
 mono: none
 dotnet: 1.0.1
 before_install:
