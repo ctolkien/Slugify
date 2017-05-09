@@ -1,7 +1,7 @@
 Slugify Core
 =======
 
-### This is a fork of the original project here: [https://github.com/fcingolani/Slugify](https://github.com/fcingolani/Slugify). This has been updated for .Net Core Support
+### This is a fork of the original project here: [https://github.com/fcingolani/Slugify](https://github.com/fcingolani/Slugify). This has been updated for .Net Standard 1.3 support
 
 | Platform | Status|
 |---------|-------|
