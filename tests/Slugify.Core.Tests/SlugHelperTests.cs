@@ -9,7 +9,7 @@ namespace Slugify.Tests
         [Fact]
         public void TestEmptyConfig()
         {
-            SlugHelper.Config config = new SlugHelper.Config();
+            var config = new SlugHelper.Config();
             Assert.True(config.ForceLowerCase);
             Assert.True(config.CollapseWhiteSpace);
             Assert.Equal(1, config.StringReplacements.Count);
@@ -19,7 +19,7 @@ namespace Slugify.Tests
         [Fact]
         public void TestDefaultConfig()
         {
-            SlugHelper.Config config = new SlugHelper.Config();
+            var config = new SlugHelper.Config();
 
             Assert.Equal(1, config.StringReplacements.Count);
             Assert.Equal("-", config.StringReplacements[" "]);

@@ -17,29 +17,34 @@ namespace Slugify
             _config = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
         }
 
-        public string GenerateSlug(string str)
+        /// <summary>
+        /// Generates a slug from the provided <paramref name="inputString"/>
+        /// </summary>
+        /// <param name="inputString">The string to slugify</param>
+        /// <returns>A slugified version of <paramref name="inputString"/></returns>
+        public string GenerateSlug(string inputString)
         {
             if (_config.ForceLowerCase)
             {
-                str = str.ToLower();
+                inputString = inputString.ToLower();
             }
 
             if (_config.TrimWhitespace)
             {
-                str = str.Trim();
+                inputString = inputString.Trim();
             }
 
-            str = CleanWhiteSpace(str, _config.CollapseWhiteSpace);
-            str = ApplyReplacements(str, _config.StringReplacements);
-            str = RemoveDiacritics(str);
-            str = DeleteCharacters(str, _config.DeniedCharactersRegex);
+            inputString = CleanWhiteSpace(inputString, _config.CollapseWhiteSpace);
+            inputString = ApplyReplacements(inputString, _config.StringReplacements);
+            inputString = RemoveDiacritics(inputString);
+            inputString = DeleteCharacters(inputString, _config.DeniedCharactersRegex);
 
             if (_config.CollapseDashes)
             {
-                str = Regex.Replace(str, "--+", "-");
+                inputString = Regex.Replace(inputString, "--+", "-");
             }
 
-            return str;
+            return inputString;
         }
 
         protected string CleanWhiteSpace(string str, bool collapse)
@@ -82,15 +87,11 @@ namespace Slugify
             return Regex.Replace(str, regex, "");
         }
 
+        /// <summary>
+        /// Used to configure the a <see cref="SlugHelper"/> instance
+        /// </summary>
         public class Config
         {
-            public Dictionary<string, string> StringReplacements { get; set; }
-            public bool ForceLowerCase { get; set; } = true;
-            public bool CollapseWhiteSpace { get; set; } = true;
-            public string DeniedCharactersRegex { get; set; } = @"[^a-zA-Z0-9\-\._]";
-            public bool CollapseDashes { get; set; } = true;
-            public bool TrimWhitespace { get; set; } = true;
-
             public Config()
             {
                 StringReplacements = new Dictionary<string, string>
@@ -98,6 +99,13 @@ namespace Slugify
                     { " ", "-" }
                 };
             }
+
+            public Dictionary<string, string> StringReplacements { get; set; }
+            public bool ForceLowerCase { get; set; } = true;
+            public bool CollapseWhiteSpace { get; set; } = true;
+            public string DeniedCharactersRegex { get; set; } = @"[^a-zA-Z0-9\-\._]";
+            public bool CollapseDashes { get; set; } = true;
+            public bool TrimWhitespace { get; set; } = true;
         }
     }
 }
