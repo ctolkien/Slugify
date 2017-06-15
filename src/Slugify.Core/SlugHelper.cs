@@ -33,7 +33,7 @@ namespace Slugify
             str = ApplyReplacements(str, _config.StringReplacements);
             str = RemoveDiacritics(str);
             str = DeleteCharacters(str, _config.DeniedCharactersRegex);
-            
+
             if (_config.CollapseDashes)
             {
                 str = Regex.Replace(str, "--+", "-");
@@ -62,7 +62,7 @@ namespace Slugify
                 }
             }
 
-            return (sb.ToString().Normalize(NormalizationForm.FormC));
+            return sb.ToString().Normalize(NormalizationForm.FormC);
         }
 
         protected string ApplyReplacements(string str, Dictionary<string, string> replacements)
@@ -99,8 +99,6 @@ namespace Slugify
                 };
             }
         }
-
     }
-
 }
 
