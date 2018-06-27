@@ -2,14 +2,15 @@
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
     <VersionPrefix>2.2.1</VersionPrefix>
-    <TargetFrameworks>net40;netstandard1.3</TargetFrameworks>
+    <TargetFrameworks>net40;netstandard1.3;netstandard2.0</TargetFrameworks>
     <AssemblyName>Slugify.Core</AssemblyName>
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
     <PackageReleaseNotes>
-2.2.1 - NuGet package updates
-2.2.0 - Minor tweaks
-</PackageReleaseNotes>
+      2.2.2 - NetStandard 2.0
+      2.2.1 - NuGet package updates
+      2.2.0 - Minor tweaks
+    </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ctolkien/Slugify</PackageProjectUrl>
     <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>

@@ -8,7 +8,7 @@ init:
 build:
   verbosity: minimal
   publish_nuget: true
-  
+
 build_script:
 - dotnet restore -v Minimal
 - dotnet build src\Slugify.Core\ -c %CONFIGURATION%
