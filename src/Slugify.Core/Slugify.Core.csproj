@@ -1,16 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
-    <VersionPrefix>2.2.0</VersionPrefix>
-    <TargetFrameworks>net40;netstandard1.3</TargetFrameworks>
+    <VersionPrefix>2.2.2</VersionPrefix>
+    <TargetFrameworks>net40;netstandard1.3;netstandard2.0</TargetFrameworks>
     <AssemblyName>Slugify.Core</AssemblyName>
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
-    <PackageReleaseNotes>2.2.0 - Minor tweaks</PackageReleaseNotes>
+    <PackageReleaseNotes>
+      2.2.2 - NetStandard 2.0
+      2.2.1 - NuGet package updates
+      2.2.0 - Minor tweaks
+    </PackageReleaseNotes>
     <PackageProjectUrl>https://github.com/ctolkien/Slugify</PackageProjectUrl>
     <PackageLicenseUrl>http://opensource.org/licenses/MIT</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/ctolkien/Slugify</RepositoryUrl>
+    <Authors>Chad Tolkien;Federico Cingolani</Authors>
+    <Description>Simple Slug / Clean URL generator helper for Microsoft .NET framework and .NET Standard.
+
+With default settings, you will get an hyphenized, lowercase, alphanumeric version of any string you please, with any diacritics removed and collapsed whitespace, collapsed dashes and trimmed whitespace.</Description>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
