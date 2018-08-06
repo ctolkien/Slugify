@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
-    <VersionPrefix>2.2.2</VersionPrefix>
+    <VersionPrefix>2.3.0</VersionPrefix>
     <TargetFrameworks>net40;netstandard1.3;netstandard2.0</TargetFrameworks>
     <AssemblyName>Slugify.Core</AssemblyName>
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
     <PackageReleaseNotes>
+      2.3.0 - ISlugHelper interface added. Thanks @jcharlesworthuk
       2.2.2 - NetStandard 2.0
       2.2.1 - NuGet package updates
       2.2.0 - Minor tweaks
