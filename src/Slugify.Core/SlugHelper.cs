@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Slugify
 {
-    public class SlugHelper
+    public class SlugHelper : ISlugHelper
     {
         protected Config _config { get; set; }
 
@@ -18,10 +18,8 @@ namespace Slugify
         }
 
         /// <summary>
-        /// Generates a slug from the provided <paramref name="inputString"/>
+        /// Implements <see cref="ISlugHelper.GenerateSlug(string)"/>
         /// </summary>
-        /// <param name="inputString">The string to slugify</param>
-        /// <returns>A slugified version of <paramref name="inputString"/></returns>
         public string GenerateSlug(string inputString)
         {
             if (_config.ForceLowerCase)
