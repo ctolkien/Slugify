@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Slugify.Core.Benchmarks.SlugifyBenchmarks-20200430-160656</title>
+<title>Slugify.Core.Benchmarks.SlugifyBenchmarks-20200430-175237</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -22,12 +22,10 @@ Intel Core i9-9900K CPU 3.60GHz (Coffee Lake), 1 CPU, 16 logical and 8 physical 
 <pre><code></code></pre>
 
 <table>
-<thead><tr><th>Method</th><th>N</th><th>          word</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen 0</th><th>Gen 1</th><th>Gen 2</th><th>Allocated</th>
+<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>Gen 0</th><th>Gen 1</th><th>Gen 2</th><th>Allocated</th>
 </tr>
-</thead><tbody><tr><td>Baseline</td><td>1</td><td>Hello</td><td>660.0 ns</td><td>2.01 ns</td><td>1.78 ns</td><td>1.00</td><td>0.00</td><td>0.0734</td><td>-</td><td>-</td><td>616 B</td>
-</tr><tr><td>Improved</td><td>1</td><td>Hello</td><td>643.8 ns</td><td>12.74 ns</td><td>11.92 ns</td><td>0.98</td><td>0.02</td><td>0.0553</td><td>-</td><td>-</td><td>464 B</td>
-</tr><tr><td>Baseline</td><td>1</td><td>lorem(...)oot!! [40]</td><td>4,174.1 ns</td><td>11.46 ns</td><td>10.72 ns</td><td>1.00</td><td>0.00</td><td>0.4501</td><td>-</td><td>-</td><td>3824 B</td>
-</tr><tr><td>Improved</td><td>1</td><td>lorem(...)oot!! [40]</td><td>3,924.9 ns</td><td>7.03 ns</td><td>5.87 ns</td><td>0.94</td><td>0.00</td><td>0.3967</td><td>-</td><td>-</td><td>3360 B</td>
+</thead><tbody><tr><td>Baseline</td><td>42.32 ms</td><td>0.045 ms</td><td>0.040 ms</td><td>1.00</td><td>3750.0000</td><td>-</td><td>-</td><td>30.57 MB</td>
+</tr><tr><td>Improved</td><td>26.14 ms</td><td>0.323 ms</td><td>0.287 ms</td><td>0.62</td><td>2562.5000</td><td>-</td><td>-</td><td>20.6 MB</td>
 </tr></tbody></table>
 </body>
 </html>

@@ -1,9 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace Slugify.Core.Benchmarks
 {
@@ -18,38 +17,34 @@ namespace Slugify.Core.Benchmarks
     [MemoryDiagnoser]
     public class SlugifyBenchmarks
     {
-        private SlugHelper _slugHelper;
+        private ISlugHelper _slugHelper;
+        private ISlugHelper _slugHelperImproved;
+        private List<string> _textList;
 
         [GlobalSetup]
         public void GlobalSetup()
         {
             _slugHelper = new SlugHelper();
+            _slugHelperImproved = new SlugHelperImproved();
+            _textList = File.ReadAllLines("gistfile.txt").ToList();
         }
-
-        [Params(1)]
-        public int N;
-
-        [Params("Hello", "lorem & ipsome Some Other thing!_ woot!!")]
-        public string word;
 
         [Benchmark(Baseline = true)]
         public void Baseline()
         {
-            for (int i = 0; i < N; i++)
+            for (var i = 0; i < _textList.Count; i++)
             {
-                _slugHelper.GenerateSlug(word);
+                _slugHelper.GenerateSlug(_textList[i]);
             }
         }
 
         [Benchmark]
         public void Improved()
         {
-            for (int i = 0; i < N; i++)
+            for (var i = 0; i < _textList.Count; i++)
             {
-                _slugHelper.GenerateSlug2(word);
+                _slugHelperImproved.GenerateSlug(_textList[i]);
             }
         }
-
-
     }
 }

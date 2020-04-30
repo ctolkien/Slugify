@@ -6,6 +6,9 @@ namespace Slugify.Tests
 {
     public class SlugHelperTest
     {
+        private static ISlugHelper Create() => Create(new SlugHelper.Config());
+        private static ISlugHelper Create(SlugHelper.Config config) => new SlugHelperImproved(config);
+
         [Fact]
         public void TestEmptyConfig()
         {
@@ -28,14 +31,14 @@ namespace Slugify.Tests
         [Fact]
         public void TestEmptyConstructor()
         {
-            var helper = new SlugHelper();
+            var helper = Create();
             Assert.NotNull(helper);
         }
 
         [Fact]
         public void TestConstructorWithNullConfig()
         {
-            Assert.Throws<ArgumentNullException>(() => new SlugHelper(null));
+            Assert.Throws<ArgumentNullException>(() => Create(null));
         }
 
         [Fact]
@@ -44,9 +47,9 @@ namespace Slugify.Tests
             const string original = "AbCdE";
             const string expected = "abcde";
 
-            var helper = new SlugHelper();
+            var helper = Create();
 
-            Assert.Equal(expected, helper.GenerateSlug2(original));
+            Assert.Equal(expected, helper.GenerateSlug(original));
         }
 
         [Fact]
@@ -55,7 +58,7 @@ namespace Slugify.Tests
             const string original = "a  b    \n  c   \t    d";
             const string expected = "a-b-c-d";
 
-            var helper = new SlugHelper();
+            var helper = Create();
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
@@ -66,7 +69,7 @@ namespace Slugify.Tests
             const string original = "a  b    \n  c   \t    d";
             const string expected = "a-b-c-d";
 
-            var helper = new SlugHelper(new SlugHelper.Config
+            var helper = Create(new SlugHelper.Config
             {
                 CollapseWhiteSpace = false
             });
@@ -80,7 +83,7 @@ namespace Slugify.Tests
             const string withDiacritics = "ñáîùëÓ";
             const string withoutDiacritics = "naiueo";
 
-            var helper = new SlugHelper();
+            var helper = Create();
 
             Assert.Equal(withoutDiacritics, helper.GenerateSlug(withDiacritics));
         }
@@ -91,7 +94,7 @@ namespace Slugify.Tests
             const string original = "!#$%&/()=";
             const string expected = "";
 
-            var helper = new SlugHelper();
+            var helper = Create();
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
@@ -107,7 +110,7 @@ namespace Slugify.Tests
             config.StringReplacements.Add("b", "y");
             config.StringReplacements.Add("c", "z");
 
-            var helper = new SlugHelper(config);
+            var helper = Create(config);
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
@@ -118,10 +121,13 @@ namespace Slugify.Tests
         [InlineData("You can't have any pudding if you don't eat your meat!", "you-cant-have-any-pudding-if-you-dont-eat-your-meat")]
         [InlineData("El veloz murciélago hindú", "el-veloz-murcielago-hindu")]
         [InlineData("Médicos sin medicinas medican meditando", "medicos-sin-medicinas-medican-meditando")]
+        [InlineData("Você está numa situação lamentável", "voce-esta-numa-situacao-lamentavel")]
+        [InlineData("crème brûlée", "creme-brulee")]
+        [InlineData("ä ö ü", "a-o-u")]
 
         public void TestFullFunctionality(string input, string output)
         {
-            var helper = new SlugHelper();
+            var helper = Create();
 
             Assert.Equal(output, helper.GenerateSlug(input));
         }
@@ -132,7 +138,7 @@ namespace Slugify.Tests
             const string original = "foo & bar";
             const string expected = "foo-bar";
 
-            var helper = new SlugHelper();
+            var helper = Create();
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
@@ -143,7 +149,7 @@ namespace Slugify.Tests
             const string original = "foo & bar & & & Jazz&&&&&&&&";
             const string expected = "foo-bar-jazz";
 
-            var helper = new SlugHelper();
+            var helper = Create();
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
@@ -154,7 +160,7 @@ namespace Slugify.Tests
             const string original = "foo & bar";
             const string expected = "foo--bar";
 
-            var helper = new SlugHelper(new SlugHelper.Config
+            var helper = Create(new SlugHelper.Config
             {
                 CollapseDashes = false
             });
@@ -168,7 +174,7 @@ namespace Slugify.Tests
             const string original = "  foo & bar  ";
             const string expected = "foo-bar";
 
-            var helper = new SlugHelper(new SlugHelper.Config
+            var helper = Create(new SlugHelper.Config
             {
                 TrimWhitespace = true
             });
@@ -182,7 +188,7 @@ namespace Slugify.Tests
             const string original = "  foo & bar  &";
             const string expected = "foo-bar";
 
-            var helper = new SlugHelper(new SlugHelper.Config
+            var helper = Create(new SlugHelper.Config
             {
                 TrimWhitespace = true
             });
@@ -196,7 +202,7 @@ namespace Slugify.Tests
             const string original = "unicode ♥ support";
             const string expected = "unicode-support";
 
-            var helper = new SlugHelper(new SlugHelper.Config
+            var helper = Create(new SlugHelper.Config
             {
                 TrimWhitespace = true,
                 CollapseDashes = true

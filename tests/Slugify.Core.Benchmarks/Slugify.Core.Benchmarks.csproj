@@ -13,5 +13,11 @@
     <ProjectReference Include="..\..\src\Slugify.Core\Slugify.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="gistfile.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 
 </Project>
