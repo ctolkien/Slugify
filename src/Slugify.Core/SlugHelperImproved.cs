@@ -37,15 +37,12 @@ namespace Slugify
         /// </summary>
         public string GenerateSlug(string inputString)
         {
-            if (_config.TrimWhitespace)
-            {
-                inputString = inputString.Trim();
-            }
+            StringBuilder sb = new StringBuilder();
 
-            if (_config.ForceLowerCase)
-            {
-                inputString = inputString.ToLower();
-            }
+            // First we trim and lowercase if necessary
+            PrepareStringBuilder(inputString, sb);
+
+            inputString = sb.ToString();
 
             inputString = CleanWhiteSpace(inputString);
             inputString = ApplyReplacements(inputString);
@@ -60,6 +57,46 @@ namespace Slugify
             return inputString;
         }
 
+        private void PrepareStringBuilder(string inputString, StringBuilder sb)
+        {
+            bool seenFirstNonWhitespace = false;
+            int indexOfLastNonWhitespace = 0;
+            for (int i = 0; i < inputString.Length; i++)
+            {
+                // first, clean whitepace
+                char c = inputString[i];
+                if (!seenFirstNonWhitespace && char.IsWhiteSpace(c))
+                {
+                    if (_config.TrimWhitespace)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                    }
+                }
+                else
+                {
+                    seenFirstNonWhitespace = true;
+                    if (!char.IsWhiteSpace(c))
+                    {
+                        indexOfLastNonWhitespace = sb.Length;
+                    }
+                    if (_config.ForceLowerCase)
+                    {
+                        c = char.ToLower(c);
+                    }
+
+                    sb.Append(c);
+                }
+            }
+
+            if (_config.TrimWhitespace)
+            {
+                sb.Length = indexOfLastNonWhitespace + 1;
+            }
+        }
         protected string CleanWhiteSpace(string str)
         {
             return _cleanWhiteSpaceRegex.Replace(str, " ");
