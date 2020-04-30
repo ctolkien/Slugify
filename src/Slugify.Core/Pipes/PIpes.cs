@@ -21,10 +21,12 @@ namespace Slugify.Core.Pipes {
 
     readonly ref struct Context {
         public readonly Span<byte> Memory;
-        public readonly StringBuilder Result;
-        public Context(Span<byte> memory) {
+        public readonly Span<char> Result;
+        public readonly Span<int> ResultCount;
+        public Context(Span<byte> memory, Span<char> result, Span<int> resultCount) {
             Memory = memory;
-            Result = new StringBuilder();
+            Result = result;
+            ResultCount = resultCount;
         }
     }
 
@@ -186,7 +188,9 @@ namespace Slugify.Core.Pipes {
     }
 
     class ResultCharPipe : CharPipe {
-        public override void Write(in Context context, char c) => context.Result.Append(c);
+        public override void Write(in Context context, char c) {
+            context.Result[context.ResultCount[0]++] = c;
+        }
         public override void Complete(in Context context) { }
     }
 }

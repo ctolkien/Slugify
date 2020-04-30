@@ -20,7 +20,7 @@ namespace Slugify.Core {
             Build(out StartPipe, out ResultPipe, out MemorySize);
         }
 
-        public string GenerateSlug(string inputString) {
+        unsafe public string GenerateSlug(string inputString) {
 
             /// This is the first step of two steps required for removing diacritics.
             /// The second step is implemented in the first char pipe.
@@ -28,11 +28,14 @@ namespace Slugify.Core {
                 inputString = inputString.Normalize(NormalizationForm.FormD);
 
             Span<byte> memory = MemorySize <= 1024 ? stackalloc byte[MemorySize] : new byte[MemorySize];
-            var context = new Context(memory);
+            Span<char> result = stackalloc char[1024];
+            Span<int> resultCount = stackalloc int[1];
+            var context = new Context(memory, result, resultCount);
             foreach (var c in inputString)
                 StartPipe.Write(context, c);
             StartPipe.Complete(context);
-            return context.Result.ToString();
+
+            return new string(result.Slice(0, resultCount[0]));
         }
 
         void Build(out CharPipe startPipe, out ResultCharPipe resultPipe, out int memorySize) {
