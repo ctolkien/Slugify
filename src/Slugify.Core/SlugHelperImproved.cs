@@ -9,6 +9,8 @@ namespace Slugify
 {
     public class SlugHelperImproved : ISlugHelper
     {
+        private static readonly Dictionary<string, Regex> _deleteRegexMap = new Dictionary<string, Regex>();
+
         protected SlugHelper.Config _config { get; set; }
 
         private readonly Regex _deniedCharactersRegex;
@@ -21,7 +23,12 @@ namespace Slugify
         {
             _config = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
 
-            _deniedCharactersRegex = new Regex(_config.DeniedCharactersRegex, RegexOptions.Compiled);
+            if (!_deleteRegexMap.TryGetValue(_config.DeniedCharactersRegex, out _deniedCharactersRegex))
+            {
+                _deniedCharactersRegex = new Regex(_config.DeniedCharactersRegex, RegexOptions.Compiled);
+                _deleteRegexMap.Add(_config.DeniedCharactersRegex, _deniedCharactersRegex);
+            }
+
             _cleanWhiteSpaceRegex = new Regex(_config.CollapseWhiteSpace ? @"\s+" : @"\s", RegexOptions.Compiled);
             _collapseDashesRegex = new Regex("--+", RegexOptions.Compiled);
         }
