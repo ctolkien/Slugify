@@ -58,7 +58,10 @@ namespace Slugify.Tests
             const string original = "a  b    \n  c   \t    d";
             const string expected = "a-b-c-d";
 
-            var helper = Create();
+            var helper = Create(new SlugHelper.Config
+            {
+                CollapseDashes = false
+            });
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
@@ -67,10 +70,11 @@ namespace Slugify.Tests
         public void TestWhiteSpaceNotCollapsing()
         {
             const string original = "a  b    \n  c   \t    d";
-            const string expected = "a-b-c-d";
+            const string expected = "a--b-------c--------d";
 
             var helper = Create(new SlugHelper.Config
             {
+                CollapseDashes = false,
                 CollapseWhiteSpace = false
             });
 
