@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace Slugify
 {
@@ -61,7 +60,6 @@ namespace Slugify
 
             return inputString;
         }
-       
 
         protected string CleanWhiteSpace(string str)
         {
@@ -72,7 +70,7 @@ namespace Slugify
         protected string RemoveDiacritics(string str)
         {
             var stFormD = str.Normalize(NormalizationForm.FormD);
-            
+
             //perf: initialise this with the length of the chars
             var sb = new StringBuilder(stFormD.Length);
 
