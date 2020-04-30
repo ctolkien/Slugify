@@ -15,7 +15,6 @@ namespace Slugify
         protected SlugHelper.Config _config { get; set; }
 
         private readonly Regex _deniedCharactersRegex;
-        private readonly Regex _cleanWhiteSpaceRegex;
 
         public SlugHelperImproved() : this(_defaultConfig.Value) { }
 
@@ -28,8 +27,6 @@ namespace Slugify
                 _deniedCharactersRegex = new Regex(_config.DeniedCharactersRegex, RegexOptions.Compiled);
                 _deleteRegexMap.Add(_config.DeniedCharactersRegex, _deniedCharactersRegex);
             }
-
-            _cleanWhiteSpaceRegex = new Regex(_config.CollapseWhiteSpace ? @"\s+" : @"\s", RegexOptions.Compiled);
         }
 
         /// <summary>
@@ -44,7 +41,6 @@ namespace Slugify
 
             inputString = sb.ToString();
 
-            inputString = CleanWhiteSpace(inputString);
             inputString = ApplyReplacements(inputString);
             inputString = RemoveDiacritics(inputString);
             inputString = DeleteCharacters(inputString);
@@ -83,6 +79,18 @@ namespace Slugify
                     {
                         indexOfLastNonWhitespace = sb.Length;
                     }
+                    else
+                    {
+                        c = ' ';
+
+                        if (_config.CollapseWhiteSpace)
+                        {
+                            while ((i + 1) < inputString.Length && char.IsWhiteSpace(inputString[i + 1]))
+                            {
+                                i++;
+                            }
+                        }
+                    }
                     if (_config.ForceLowerCase)
                     {
                         c = char.ToLower(c);
@@ -96,10 +104,6 @@ namespace Slugify
             {
                 sb.Length = indexOfLastNonWhitespace + 1;
             }
-        }
-        protected string CleanWhiteSpace(string str)
-        {
-            return _cleanWhiteSpaceRegex.Replace(str, " ");
         }
 
         // Thanks http://stackoverflow.com/a/249126!
