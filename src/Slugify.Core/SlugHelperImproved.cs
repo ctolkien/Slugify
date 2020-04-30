@@ -38,10 +38,10 @@ namespace Slugify
 
             // First we trim and lowercase if necessary
             PrepareStringBuilder(inputString, sb);
+            ApplyStringReplacements(sb);
 
             inputString = sb.ToString();
 
-            inputString = ApplyReplacements(inputString);
             inputString = RemoveDiacritics(inputString);
             inputString = DeleteCharacters(inputString);
 
@@ -106,6 +106,56 @@ namespace Slugify
             }
         }
 
+        private void ApplyStringReplacements(StringBuilder sb)
+        {
+            bool replaced;
+            do
+            {
+                replaced = false;
+                foreach (var replacement in _config.StringReplacements)
+                {
+                    for (int i = 0; i < sb.Length; i++)
+                    {
+                        char c = sb[i];
+
+                        if (SubstringEquals(sb, i, replacement.Key))
+                        {
+                            sb.Remove(i, replacement.Key.Length);
+                            sb.Insert(i, replacement.Value);
+
+                            i += replacement.Value.Length - 1;
+
+                            replaced = true;
+                        }
+                    }
+                }
+            }
+            while (replaced);
+        }
+
+        private static bool SubstringEquals(StringBuilder sb, int index, string toMatch)
+        {
+            if (sb.Length - index < toMatch.Length)
+            {
+                return false;
+            }
+
+            for (int i = index; i < sb.Length; i++)
+            {
+                int matchIndex = i - index;
+
+                if (matchIndex == toMatch.Length)
+                {
+                    return true;
+                }
+                else if (sb[i] != toMatch[matchIndex])
+                {
+                    return false;
+                }
+            }
+            return sb.Length == toMatch.Length;
+        }
+
         // Thanks http://stackoverflow.com/a/249126!
         protected string RemoveDiacritics(string str)
         {
@@ -124,17 +174,6 @@ namespace Slugify
             }
 
             return sb.ToString().Normalize(NormalizationForm.FormC);
-        }
-
-        protected string ApplyReplacements(string str)
-        {
-            //perf: don't use string builder here, it's faster without
-            foreach (var replacement in _config.StringReplacements)
-            {
-                str = str.Replace(replacement.Key, replacement.Value);
-            }
-
-            return str;
         }
 
         protected string DeleteCharacters(string str)
