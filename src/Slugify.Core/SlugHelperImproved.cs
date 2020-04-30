@@ -10,6 +10,7 @@ namespace Slugify
     public class SlugHelperImproved : ISlugHelper
     {
         private static readonly Dictionary<string, Regex> _deleteRegexMap = new Dictionary<string, Regex>();
+        private static readonly Lazy<SlugHelper.Config> _defaultConfig = new Lazy<SlugHelper.Config>(() => new SlugHelper.Config());
 
         protected SlugHelper.Config _config { get; set; }
 
@@ -17,7 +18,7 @@ namespace Slugify
         private readonly Regex _cleanWhiteSpaceRegex;
         private readonly Regex _collapseDashesRegex;
 
-        public SlugHelperImproved() : this(new SlugHelper.Config()) { }
+        public SlugHelperImproved() : this(_defaultConfig.Value) { }
 
         public SlugHelperImproved(SlugHelper.Config config)
         {
