@@ -12,7 +12,7 @@ namespace Slugify.Tests
             var config = new SlugHelper.Config();
             Assert.True(config.ForceLowerCase);
             Assert.True(config.CollapseWhiteSpace);
-            Assert.Equal(1, config.StringReplacements.Count);
+            Assert.Single(config.StringReplacements);
             Assert.NotNull(new Regex(config.DeniedCharactersRegex));
         }
 
@@ -21,7 +21,7 @@ namespace Slugify.Tests
         {
             var config = new SlugHelper.Config();
 
-            Assert.Equal(1, config.StringReplacements.Count);
+            Assert.Single(config.StringReplacements);
             Assert.Equal("-", config.StringReplacements[" "]);
         }
 
@@ -46,7 +46,7 @@ namespace Slugify.Tests
 
             var helper = new SlugHelper();
 
-            Assert.Equal(expected, helper.GenerateSlug(original));
+            Assert.Equal(expected, helper.GenerateSlug2(original));
         }
 
         [Fact]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace Slugify
 {
@@ -44,6 +45,72 @@ namespace Slugify
 
             return inputString;
         }
+
+        public string GenerateSlug2(string inputString)
+        {
+            if (_config.TrimWhitespace)
+            {
+                inputString = inputString.Trim();
+            }
+
+            if (_config.ForceLowerCase)
+            {
+                inputString = inputString.ToLower();
+            }
+
+            inputString = CleanWhiteSpace(inputString, _config.CollapseWhiteSpace);
+            inputString = ApplyReplacements(inputString, _config.StringReplacements);
+            inputString = RemoveDiacritics(inputString);
+            inputString = DeleteCharacters(inputString, _config.DeniedCharactersRegex);
+
+            if (_config.CollapseDashes)
+            {
+                inputString = Regex.Replace(inputString, "--+", "-");
+            }
+
+            return inputString;
+
+            string CleanWhiteSpace(string str, bool collapse)
+            {
+                return Regex.Replace(str, collapse ? @"\s+" : @"\s", " ");
+            }
+
+            string RemoveDiacritics(string str)
+            {
+                var stFormD = str.Normalize(NormalizationForm.FormD);
+                var sb = new StringBuilder(stFormD.Length);
+
+
+                for (var ich = 0; ich < stFormD.Length; ich++)
+                {
+                    var uc = CharUnicodeInfo.GetUnicodeCategory(stFormD[ich]);
+                    if (uc != UnicodeCategory.NonSpacingMark)
+                    {
+                        sb.Append(stFormD[ich]);
+                    }
+                }
+
+                return sb.ToString().Normalize(NormalizationForm.FormC);
+            }
+            
+
+            string ApplyReplacements(string str, Dictionary<string, string> replacements)
+            {
+                foreach (var replacement in replacements)
+                {
+                    str = str.Replace(replacement.Key, replacement.Value);
+                }
+
+                return str;
+            }
+
+            string DeleteCharacters(string str, string regex)
+            {
+                return Regex.Replace(str, regex, "");
+            }
+
+        }
+
 
         protected string CleanWhiteSpace(string str, bool collapse)
         {
@@ -90,15 +157,11 @@ namespace Slugify
         /// </summary>
         public class Config
         {
-            public Config()
-            {
-                StringReplacements = new Dictionary<string, string>
+            public Dictionary<string, string> StringReplacements { get; set; } = new Dictionary<string, string>
                 {
                     { " ", "-" }
                 };
-            }
-
-            public Dictionary<string, string> StringReplacements { get; set; }
+            
             public bool ForceLowerCase { get; set; } = true;
             public bool CollapseWhiteSpace { get; set; } = true;
             public string DeniedCharactersRegex { get; set; } = @"[^a-zA-Z0-9\-\._]";
