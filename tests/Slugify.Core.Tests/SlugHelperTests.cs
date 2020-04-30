@@ -119,6 +119,21 @@ namespace Slugify.Tests
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
 
+        [Fact]
+        public void TestCharacterDoubleReplacement()
+        {
+            const string original = "a";
+            const string expected = "c";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("a", "b");
+            config.StringReplacements.Add("b", "c");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
         [Theory]
         [InlineData("E¢Ðƕtoy  mÚÄ´¨ss¨sïuy   !!!!!  Pingüiño", "etoy-muasssiuy-pinguino")]
         [InlineData("QWE dfrewf# $%&!! asd", "qwe-dfrewf-asd")]
