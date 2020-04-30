@@ -1,6 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -19,6 +21,7 @@ namespace Slugify.Core.Benchmarks
     {
         private ISlugHelper _slugHelper;
         private ISlugHelper _slugHelperImproved;
+        private ISlugHelper _slugHelperPipes;
         private List<string> _textList;
 
         [GlobalSetup]
@@ -26,6 +29,7 @@ namespace Slugify.Core.Benchmarks
         {
             _slugHelper = new SlugHelper();
             _slugHelperImproved = new SlugHelperImproved();
+            _slugHelperPipes = new PipesSlugHelper();
             _textList = File.ReadAllLines("gistfile.txt").ToList();
         }
 
@@ -38,13 +42,21 @@ namespace Slugify.Core.Benchmarks
             }
         }
 
+        //[Benchmark]
+        //public void Improved()
+        //{
+        //    for (var i = 0; i < _textList.Count; i++)
+        //    {
+        //        _slugHelperImproved.GenerateSlug(_textList[i]);
+        //    }
+        //}
+
         [Benchmark]
-        public void Improved()
-        {
-            for (var i = 0; i < _textList.Count; i++)
-            {
-                _slugHelperImproved.GenerateSlug(_textList[i]);
-            }
+        public void Pipes() {
+            _textList.AsParallel().ForAll(x => _slugHelperPipes.GenerateSlug(x));
+            //for (var i = 0; i < _textList.Count; i++) {
+            //    _slugHelperPipes.GenerateSlug(_textList[i]);
+            //}
         }
     }
 }

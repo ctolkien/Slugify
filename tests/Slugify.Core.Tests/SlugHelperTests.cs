@@ -1,13 +1,14 @@
 ﻿using System;
 using Xunit;
 using System.Text.RegularExpressions;
+using Slugify.Core;
 
 namespace Slugify.Tests
 {
     public class SlugHelperTest
     {
         private static ISlugHelper Create() => Create(new SlugHelper.Config());
-        private static ISlugHelper Create(SlugHelper.Config config) => new SlugHelperImproved(config);
+        private static ISlugHelper Create(SlugHelper.Config config) => new PipesSlugHelper(config);
 
         [Fact]
         public void TestEmptyConfig()
@@ -199,8 +200,8 @@ namespace Slugify.Tests
         [Fact]
         public void TestHandlingOfUnicodeCharacters()
         {
-            const string original = "unicode ♥ support";
-            const string expected = "unicode-support";
+            const string original = "a ♥ b";
+            const string expected = "a-b";
 
             var helper = Create(new SlugHelper.Config
             {

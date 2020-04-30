@@ -54,6 +54,10 @@ namespace Slugify
         // Thanks http://stackoverflow.com/a/249126!
         protected string RemoveDiacritics(string str)
         {
+            if (!str.IsNormalized(NormalizationForm.FormD))
+                str = str.Normalize(NormalizationForm.FormD);
+
+            
             var stFormD = str.Normalize(NormalizationForm.FormD);
             var sb = new StringBuilder();
 

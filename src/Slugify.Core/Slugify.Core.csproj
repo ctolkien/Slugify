@@ -27,6 +27,7 @@ With default settings, you will get an hyphenized, lowercase, alphanumeric versi
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
   </PropertyGroup>
   <ItemGroup>
