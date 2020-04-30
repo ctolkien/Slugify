@@ -8,6 +8,7 @@ namespace Slugify
 {
     public class SlugHelperImproved : ISlugHelper
     {
+        private static readonly Lazy<Regex> _collapseDashesRegex = new Lazy<Regex>(() => new Regex("--+", RegexOptions.Compiled));
         private static readonly Dictionary<string, Regex> _deleteRegexMap = new Dictionary<string, Regex>();
         private static readonly Lazy<SlugHelper.Config> _defaultConfig = new Lazy<SlugHelper.Config>(() => new SlugHelper.Config());
 
@@ -15,7 +16,6 @@ namespace Slugify
 
         private readonly Regex _deniedCharactersRegex;
         private readonly Regex _cleanWhiteSpaceRegex;
-        private readonly Regex _collapseDashesRegex;
 
         public SlugHelperImproved() : this(_defaultConfig.Value) { }
 
@@ -30,7 +30,6 @@ namespace Slugify
             }
 
             _cleanWhiteSpaceRegex = new Regex(_config.CollapseWhiteSpace ? @"\s+" : @"\s", RegexOptions.Compiled);
-            _collapseDashesRegex = new Regex("--+", RegexOptions.Compiled);
         }
 
         /// <summary>
@@ -55,7 +54,7 @@ namespace Slugify
 
             if (_config.CollapseDashes)
             {
-                inputString = _collapseDashesRegex.Replace(inputString, "-");
+                inputString = _collapseDashesRegex.Value.Replace(inputString, "-");
             }
 
             return inputString;
