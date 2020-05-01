@@ -14,19 +14,11 @@ namespace Slugify
 
         protected SlugHelper.Config _config { get; set; }
 
-        private readonly Regex _deniedCharactersRegex;
-
         public SlugHelperImproved() : this(_defaultConfig.Value) { }
 
         public SlugHelperImproved(SlugHelper.Config config)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
-
-            if (!_deleteRegexMap.TryGetValue(_config.DeniedCharactersRegex, out _deniedCharactersRegex))
-            {
-                _deniedCharactersRegex = new Regex(_config.DeniedCharactersRegex, RegexOptions.Compiled);
-                _deleteRegexMap.Add(_config.DeniedCharactersRegex, _deniedCharactersRegex);
-            }
         }
 
         /// <summary>
@@ -41,10 +33,24 @@ namespace Slugify
             ApplyStringReplacements(sb);
             RemoveNonSpacingMarks(sb);
 
-            inputString = sb.ToString();
+            if (_config.DeniedCharactersRegex == null)
+            {
+                RemoveNotAllowedCharacters(sb);
+            }
 
-            inputString = DeleteCharacters(inputString);
+            // For backwards compatibility
+            if (_config.DeniedCharactersRegex != null)
+            {
+                if (!_deleteRegexMap.TryGetValue(_config.DeniedCharactersRegex, out Regex deniedCharactersRegex))
+                {
+                    deniedCharactersRegex = new Regex(_config.DeniedCharactersRegex, RegexOptions.Compiled);
+                    _deleteRegexMap.Add(_config.DeniedCharactersRegex, deniedCharactersRegex);
+                }
 
+                sb.Clear();
+                sb.Append(DeleteCharacters(sb.ToString(), deniedCharactersRegex));
+            }
+ 
             if (_config.CollapseDashes)
             {
                 inputString = _collapseDashesRegex.Value.Replace(inputString, "-");
@@ -159,9 +165,23 @@ namespace Slugify
             }
         }
 
-        protected string DeleteCharacters(string str)
+        protected void RemoveNotAllowedCharacters(StringBuilder sb)
         {
-            return _deniedCharactersRegex.Replace(str, string.Empty);
+            // perf!
+            HashSet<char> allowedChars = _config.AllowedChars;
+            for (var i = 0; i < sb.Length; i++)
+            {
+                if (!allowedChars.Contains(sb[i]))
+                {
+                    sb.Remove(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        protected string DeleteCharacters(string str, Regex deniedCharactersRegex)
+        {
+            return deniedCharactersRegex.Replace(str, string.Empty);
         }
     }
 }
