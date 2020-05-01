@@ -9,7 +9,7 @@ namespace Slugify.Tests
     public class SlugHelperTest
     {
         private static ISlugHelper Create() => Create(new SlugHelper.Config());
-        private static ISlugHelper Create(SlugHelper.Config config) => new ModuleSlugHelper(config);
+        private static ISlugHelper Create(SlugHelper.Config config) => new SlugHelper(config);
 
         [Fact]
         public void TestEmptyConfig()
@@ -212,5 +212,20 @@ namespace Slugify.Tests
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
+
+        [Fact]
+        public void TestRecursiveReplacement() 
+        {
+            const string original = "yababbabaz";
+            const string expected = "yz";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("abba", "");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
     }
 }
