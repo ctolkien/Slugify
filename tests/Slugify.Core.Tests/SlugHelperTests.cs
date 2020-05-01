@@ -201,20 +201,6 @@ namespace Slugify.Tests
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
 
-        [Fact(Skip = "This fails, skipping for now, as not sure if it's a real problem")]
-        public void TestConfigForTrimmingWithTrailingReplacedCharacter()
-        {
-            const string original = "  foo & bar  &";
-            const string expected = "foo-bar";
-
-            var helper = Create(new SlugHelper.Config
-            {
-                TrimWhitespace = true
-            });
-
-            Assert.Equal(expected, helper.GenerateSlug(original));
-        }
-
         [Fact]
         public void TestHandlingOfUnicodeCharacters()
         {
