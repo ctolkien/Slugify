@@ -8,7 +8,6 @@ namespace Slugify
 {
     public class SlugHelperImproved : ISlugHelper
     {
-        private static readonly Lazy<Regex> _collapseDashesRegex = new Lazy<Regex>(() => new Regex("--+", RegexOptions.Compiled));
         private static readonly Dictionary<string, Regex> _deleteRegexMap = new Dictionary<string, Regex>();
         private static readonly Lazy<SlugHelper.Config> _defaultConfig = new Lazy<SlugHelper.Config>(() => new SlugHelper.Config());
 
@@ -53,10 +52,10 @@ namespace Slugify
  
             if (_config.CollapseDashes)
             {
-                inputString = _collapseDashesRegex.Value.Replace(inputString, "-");
+                CollapseDashes(sb);
             }
 
-            return inputString;
+            return sb.ToString();
         }
 
         private void PrepareStringBuilder(string inputString, StringBuilder sb)
@@ -175,6 +174,31 @@ namespace Slugify
                 {
                     sb.Remove(i, 1);
                     i--;
+                }
+            }
+        }
+
+        protected void CollapseDashes(StringBuilder sb)
+        {
+            bool firstDash = true;
+            for (int i = 0; i < sb.Length; i++)
+            {
+                // first, clean whitepace
+                if (sb[i] == '-')
+                {
+                    if (firstDash)
+                    {
+                        firstDash = false;
+                    }
+                    else
+                    {
+                        sb.Remove(i, 1);
+                        i--;
+                    }
+                }
+                else
+                {
+                    firstDash = true;
                 }
             }
         }
