@@ -104,6 +104,20 @@ namespace Slugify.Tests
         }
 
         [Fact]
+        public void TestCharacterReplacementWithWhitespace()
+        {
+            const string original = "     abcde     ";
+            const string expected = "bcde";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("a", " ");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
         public void TestCharacterReplacement()
         {
             const string original = "abcde";
