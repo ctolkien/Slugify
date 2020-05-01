@@ -2,13 +2,14 @@
 using Xunit;
 using System.Text.RegularExpressions;
 using Slugify.Core;
+using Slugify.Core.Modules;
 
 namespace Slugify.Tests
 {
     public class SlugHelperTest
     {
         private static ISlugHelper Create() => Create(new SlugHelper.Config());
-        private static ISlugHelper Create(SlugHelper.Config config) => new PipesSlugHelper(config);
+        private static ISlugHelper Create(SlugHelper.Config config) => new ModuleSlugHelper(config);
 
         [Fact]
         public void TestEmptyConfig()

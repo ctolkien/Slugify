@@ -58,5 +58,13 @@ namespace Slugify.Core.Benchmarks
             //    _slugHelperPipes.GenerateSlug(_textList[i]);
             //}
         }
+
+        [Benchmark]
+        public void Modules() {
+            _textList.AsParallel().ForAll(x => _slugHelperPipes.GenerateSlug(x));
+            //for (var i = 0; i < _textList.Count; i++) {
+            //    _slugHelperPipes.GenerateSlug(_textList[i]);
+            //}
+        }
     }
 }
