@@ -35,12 +35,12 @@ namespace Slugify.Core.Modules {
         public string GenerateSlug(string inputString) {
 
             /// This is the first step of two steps required for removing diacritics.
-            /// The second step is implemented in the first char pipe.
+            /// The second step is implemented in the first module, DiacriticRemovalModule.
             if (!inputString.IsNormalized(NormalizationForm.FormD))
                 inputString = inputString.Normalize(NormalizationForm.FormD);
 
-            Span<char> input = stackalloc char[inputString.Length];
-            Span<char> output = stackalloc char[inputString.Length];
+            Span<char> input = inputString.Length <= 1024 ? stackalloc char[inputString.Length] : new char[inputString.Length];
+            Span<char> output = inputString.Length <= 1024 ? stackalloc char[inputString.Length] : new char[inputString.Length];
             inputString.AsSpan().CopyTo(input);
             var context = new Context(input, output);
             foreach (var module in Modules)
