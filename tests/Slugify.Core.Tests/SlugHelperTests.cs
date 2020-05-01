@@ -17,6 +17,19 @@ namespace Slugify.Tests
             Assert.True(config.CollapseWhiteSpace);
             Assert.Single(config.StringReplacements);
             Assert.NotNull(new Regex(config.DeniedCharactersRegex));
+            Assert.Null(config.DeniedCharactersRegex);
+            Assert.NotEmpty(config.AllowedChars);
+        }
+
+        [Fact]
+        public void TestDeniedCharacterConfig()
+        {
+            var config = new SlugHelper.Config
+            {
+                DeniedCharactersRegex = ""
+            };
+
+            Assert.Throws<InvalidOperationException>(() => config.AllowedChars);
         }
 
         [Fact]
@@ -99,6 +112,20 @@ namespace Slugify.Tests
             const string expected = "";
 
             var helper = Create();
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestDeniedCharacterDeletionCustomized()
+        {
+            const string original = "ab!#$%&/()=";
+            const string expected = "b$";
+
+            var config = new SlugHelper.Config();
+            config.AllowedChars.Remove('a');
+            config.AllowedChars.Add('$');
+            var helper = Create(config);
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
