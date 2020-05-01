@@ -66,7 +66,8 @@ namespace Slugify
             {
                 // first, clean whitepace
                 char c = inputString[i];
-                if (!seenFirstNonWhitespace && char.IsWhiteSpace(c))
+                bool isWhitespace = char.IsWhiteSpace(c);
+                if (!seenFirstNonWhitespace && isWhitespace)
                 {
                     if (_config.TrimWhitespace)
                     {
@@ -80,7 +81,7 @@ namespace Slugify
                 else
                 {
                     seenFirstNonWhitespace = true;
-                    if (!char.IsWhiteSpace(c))
+                    if (!isWhitespace)
                     {
                         indexOfLastNonWhitespace = sb.Length;
                     }
