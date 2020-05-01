@@ -73,8 +73,6 @@ namespace Slugify.Core.Modules {
                     || (c == '-');
                 if (write) {
                     context.Output[outputLength++] = c;
-                } else {
-                    //context.Output[outputLength++] = '-';
                 }
             }
             context.Update(outputLength);
@@ -148,8 +146,11 @@ namespace Slugify.Core.Modules {
                             matchCount = 0;
                         }
                     } else {
-                        for (var j = 0; i < matchCount; j++)
-                            context.Output[outputLength++] = Search[j];
+                        if (matchCount > 0) {
+                            for (var j = 0; i < matchCount; j++)
+                                context.Output[outputLength++] = Search[j];
+                            matchCount = 0;
+                        }
                         context.Output[outputLength++] = context.Input[i];
                     }
                 }
