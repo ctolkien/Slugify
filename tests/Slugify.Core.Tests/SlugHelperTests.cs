@@ -134,6 +134,98 @@ namespace Slugify.Tests
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
 
+        [Fact]
+        public void TestCharacterReplacementOrdering()
+        {
+            const string original = "catdogfish";
+            const string expected = "cdf";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("cat", "c");
+            config.StringReplacements.Add("catdog", "e");
+            config.StringReplacements.Add("dog", "d");
+            config.StringReplacements.Add("fish", "f");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestCharacterReplacementShorting()
+        {
+            const string original = "catdogfish";
+            const string expected = "cdf";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("cat", "c");
+            config.StringReplacements.Add("dog", "d");
+            config.StringReplacements.Add("fish", "f");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestCharacterReplacementLengthening()
+        {
+            const string original = "a";
+            const string expected = "ccdccdcc";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("a", "bdbdb");
+            config.StringReplacements.Add("b", "cc");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestCharacterReplacementLookBackwards()
+        {
+            const string original = "cat";
+            const string expected = "at";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("a", "c");
+            config.StringReplacements.Add("cc", "a");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestRecursiveReplacement()
+        {
+            const string original = "ycdabbadcz";
+            const string expected = "yz";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("abba", "");
+            config.StringReplacements.Add("cddc", "");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void TestRecursiveReplacement2()
+        {
+            const string original = "yababbabaz";
+            const string expected = "yabbaz";
+
+            var config = new SlugHelper.Config();
+            config.StringReplacements.Add("abba", "");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
         [Theory]
         [InlineData("E¢Ðƕtoy  mÚÄ´¨ss¨sïuy   !!!!!  Pingüiño", "etoy-muasssiuy-pinguino")]
         [InlineData("QWE dfrewf# $%&!! asd", "qwe-dfrewf-asd")]
