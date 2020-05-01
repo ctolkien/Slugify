@@ -1,6 +1,5 @@
 ﻿using System;
 using Xunit;
-using System.Text.RegularExpressions;
 
 namespace Slugify.Tests
 {
@@ -16,7 +15,6 @@ namespace Slugify.Tests
             Assert.True(config.ForceLowerCase);
             Assert.True(config.CollapseWhiteSpace);
             Assert.Single(config.StringReplacements);
-            Assert.NotNull(new Regex(config.DeniedCharactersRegex));
             Assert.Null(config.DeniedCharactersRegex);
             Assert.NotEmpty(config.AllowedChars);
         }
@@ -126,6 +124,21 @@ namespace Slugify.Tests
             config.AllowedChars.Remove('a');
             config.AllowedChars.Add('$');
             var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+
+        [Fact]
+        public void TestDeniedCharacterDeletionLegacy()
+        {
+            const string original = "!#$%&/()=";
+            const string expected = "";
+
+            var helper = Create(new SlugHelper.Config
+            {
+                DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
+            });
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
