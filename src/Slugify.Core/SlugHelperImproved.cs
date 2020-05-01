@@ -37,12 +37,12 @@ namespace Slugify
             StringBuilder sb = new StringBuilder();
 
             // First we trim and lowercase if necessary
-            PrepareStringBuilder(inputString, sb);
+            PrepareStringBuilder(inputString.Normalize(NormalizationForm.FormD), sb);
             ApplyStringReplacements(sb);
+            RemoveNonSpacingMarks(sb);
 
             inputString = sb.ToString();
 
-            inputString = RemoveDiacritics(inputString);
             inputString = DeleteCharacters(inputString);
 
             if (_config.CollapseDashes)
@@ -147,23 +147,16 @@ namespace Slugify
         }
 
         // Thanks http://stackoverflow.com/a/249126!
-        protected string RemoveDiacritics(string str)
+        protected void RemoveNonSpacingMarks(StringBuilder sb)
         {
-            var stFormD = str.Normalize(NormalizationForm.FormD);
-
-            //perf: initialise this with the length of the chars
-            var sb = new StringBuilder(stFormD.Length);
-
-            for (var ich = 0; ich < stFormD.Length; ich++)
+            for (var ich = 0; ich < sb.Length; ich++)
             {
-                var uc = CharUnicodeInfo.GetUnicodeCategory(stFormD[ich]);
-                if (uc != UnicodeCategory.NonSpacingMark)
+                if (CharUnicodeInfo.GetUnicodeCategory(sb[ich]) == UnicodeCategory.NonSpacingMark)
                 {
-                    sb.Append(stFormD[ich]);
+                    sb.Remove(ich, 1);
+                    ich--;
                 }
             }
-
-            return sb.ToString().Normalize(NormalizationForm.FormC);
         }
 
         protected string DeleteCharacters(string str)
