@@ -108,29 +108,19 @@ namespace Slugify
 
         private void ApplyStringReplacements(StringBuilder sb)
         {
-            bool replaced;
-            do
+            foreach (var replacement in _config.StringReplacements)
             {
-                replaced = false;
-                foreach (var replacement in _config.StringReplacements)
+                for (int i = 0; i < sb.Length; i++)
                 {
-                    for (int i = 0; i < sb.Length; i++)
+                    if (SubstringEquals(sb, i, replacement.Key))
                     {
-                        char c = sb[i];
+                        sb.Remove(i, replacement.Key.Length);
+                        sb.Insert(i, replacement.Value);
 
-                        if (SubstringEquals(sb, i, replacement.Key))
-                        {
-                            sb.Remove(i, replacement.Key.Length);
-                            sb.Insert(i, replacement.Value);
-
-                            i += replacement.Value.Length - 1;
-
-                            replaced = true;
-                        }
+                        i += replacement.Value.Length - 1;
                     }
                 }
             }
-            while (replaced);
         }
 
         private static bool SubstringEquals(StringBuilder sb, int index, string toMatch)
@@ -153,7 +143,7 @@ namespace Slugify
                     return false;
                 }
             }
-            return sb.Length == toMatch.Length;
+            return (sb.Length - index) == toMatch.Length;
         }
 
         // Thanks http://stackoverflow.com/a/249126!
