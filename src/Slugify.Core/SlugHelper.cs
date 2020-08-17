@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
 
 namespace Slugify
 {
     public class SlugHelper : ISlugHelper
     {
-        protected Config _config { get; set; }
+        private static readonly Dictionary<string, Regex> _deleteRegexMap = new Dictionary<string, Regex>();
+        private static readonly Lazy<SlugHelperLegacy.Config> _defaultConfig = new Lazy<SlugHelperLegacy.Config>(() => new SlugHelperLegacy.Config());
 
-        public SlugHelper() : this(new Config()) { }
+        protected SlugHelperLegacy.Config Config { get; set; }
 
-        public SlugHelper(Config config)
+        public SlugHelper() : this(_defaultConfig.Value) { }
+
+        public SlugHelper(SlugHelperLegacy.Config config)
         {
-            _config = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
+            Config = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
         }
 
         /// <summary>
@@ -24,110 +25,186 @@ namespace Slugify
         /// </summary>
         public string GenerateSlug(string inputString)
         {
-            if (_config.ForceLowerCase)
-            {
-                inputString = inputString.ToLower();
-            }
-
-            if (_config.TrimWhitespace)
-            {
-                inputString = inputString.Trim();
-            }
-
-            inputString = CleanWhiteSpace(inputString, _config.CollapseWhiteSpace);
-            inputString = ApplyReplacements(inputString, _config.StringReplacements);
-            inputString = RemoveDiacritics(inputString);
-
-            string regex = _config.DeniedCharactersRegex;
-            if (regex == null)
-            {
-                regex = "[^" + Regex.Escape(string.Join("", _config.AllowedChars)).Replace("-", "\\-") + "]";
-            }
-            inputString = DeleteCharacters(inputString, regex);
-
-            if (_config.CollapseDashes)
-            {
-                inputString = Regex.Replace(inputString, "--+", "-");
-            }
-
-            return inputString;
-        }
-
-        protected string CleanWhiteSpace(string str, bool collapse)
-        {
-            return Regex.Replace(str, collapse ? @"\s+" : @"\s", " ");
-        }
-
-        // Thanks http://stackoverflow.com/a/249126!
-        protected string RemoveDiacritics(string str)
-        {
-            var stFormD = str.Normalize(NormalizationForm.FormD);
             var sb = new StringBuilder();
 
-            for (int ich = 0; ich < stFormD.Length; ich++)
+            // First we trim and lowercase if necessary
+            PrepareStringBuilder(inputString.Normalize(NormalizationForm.FormD), sb);
+            ApplyStringReplacements(sb);
+            RemoveNonSpacingMarks(sb);
+
+            if (Config.DeniedCharactersRegex == null)
             {
-                UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(stFormD[ich]);
-                if (uc != UnicodeCategory.NonSpacingMark)
-                {
-                    sb.Append(stFormD[ich]);
-                }
+                RemoveNotAllowedCharacters(sb);
             }
 
-            return sb.ToString().Normalize(NormalizationForm.FormC);
-        }
-
-        protected string ApplyReplacements(string str, Dictionary<string, string> replacements)
-        {
-            var sb = new StringBuilder(str);
-
-            foreach (KeyValuePair<string, string> replacement in replacements)
+            // For backwards compatibility
+            if (Config.DeniedCharactersRegex != null)
             {
-                sb = sb.Replace(replacement.Key, replacement.Value);
+                if (!_deleteRegexMap.TryGetValue(Config.DeniedCharactersRegex, out var deniedCharactersRegex))
+                {
+                    deniedCharactersRegex = new Regex(Config.DeniedCharactersRegex, RegexOptions.Compiled);
+                    _deleteRegexMap.Add(Config.DeniedCharactersRegex, deniedCharactersRegex);
+                }
+
+                sb.Clear();
+                sb.Append(DeleteCharacters(sb.ToString(), deniedCharactersRegex));
+            }
+
+            if (Config.CollapseDashes)
+            {
+                CollapseDashes(sb);
             }
 
             return sb.ToString();
         }
 
-        protected string DeleteCharacters(string str, string regex)
+        private void PrepareStringBuilder(string inputString, StringBuilder sb)
         {
-            return Regex.Replace(str, regex, "");
-        }
-
-        /// <summary>
-        /// Used to configure the a <see cref="SlugHelper"/> instance
-        /// </summary>
-        public class Config
-        {
-            // TODO: Implement a source generator so this can be done at compile time :)
-            private static readonly char[] s_allowedChars =
-                ("abcdefghijklmnopqrstuvwxyz" +
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                "0123456789" +
-                "-._").ToCharArray();
-
-            private readonly HashSet<char> _allowedChars = new HashSet<char>(s_allowedChars);
-
-            public Dictionary<string, string> StringReplacements { get; set; } = new Dictionary<string, string>
-                {
-                    { " ", "-" }
-                };
-
-            public bool ForceLowerCase { get; set; } = true;
-            public bool CollapseWhiteSpace { get; set; } = true;
-            /// <summary>
-            /// Note: Setting this property will stop the AllowedChars feature from being used
-            /// </summary>
-            public string DeniedCharactersRegex { get; set; }
-            public HashSet<char> AllowedChars
+            var seenFirstNonWhitespace = false;
+            var indexOfLastNonWhitespace = 0;
+            for (var i = 0; i < inputString.Length; i++)
             {
-                get
+                // first, clean whitepace
+                var c = inputString[i];
+                var isWhitespace = char.IsWhiteSpace(c);
+                if (!seenFirstNonWhitespace && isWhitespace)
                 {
-                    return DeniedCharactersRegex == null ? _allowedChars : throw new InvalidOperationException("After setting DeniedCharactersRegex the AllowedChars feature cannot be used.");
+                    if (Config.TrimWhitespace)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                    }
+                }
+                else
+                {
+                    seenFirstNonWhitespace = true;
+                    if (!isWhitespace)
+                    {
+                        indexOfLastNonWhitespace = sb.Length;
+                    }
+                    else
+                    {
+                        c = ' ';
+
+                        if (Config.CollapseWhiteSpace)
+                        {
+                            while ((i + 1) < inputString.Length && char.IsWhiteSpace(inputString[i + 1]))
+                            {
+                                i++;
+                            }
+                        }
+                    }
+                    if (Config.ForceLowerCase)
+                    {
+                        c = char.ToLower(c);
+                    }
+
+                    sb.Append(c);
                 }
             }
-            public bool CollapseDashes { get; set; } = true;
-            public bool TrimWhitespace { get; set; } = true;
+
+            if (Config.TrimWhitespace)
+            {
+                sb.Length = indexOfLastNonWhitespace + 1;
+            }
         }
+
+        private void ApplyStringReplacements(StringBuilder sb)
+        {
+            foreach (var replacement in Config.StringReplacements)
+            {
+                for (var i = 0; i < sb.Length; i++)
+                {
+                    if (SubstringEquals(sb, i, replacement.Key))
+                    {
+                        sb.Remove(i, replacement.Key.Length);
+                        sb.Insert(i, replacement.Value);
+
+                        i += replacement.Value.Length - 1;
+                    }
+                }
+            }
+        }
+
+        private static bool SubstringEquals(StringBuilder sb, int index, string toMatch)
+        {
+            if (sb.Length - index < toMatch.Length)
+            {
+                return false;
+            }
+
+            for (var i = index; i < sb.Length; i++)
+            {
+                var matchIndex = i - index;
+
+                if (matchIndex == toMatch.Length)
+                {
+                    return true;
+                }
+                else if (sb[i] != toMatch[matchIndex])
+                {
+                    return false;
+                }
+            }
+            return (sb.Length - index) == toMatch.Length;
+        }
+
+        // Thanks http://stackoverflow.com/a/249126!
+        protected static void RemoveNonSpacingMarks(StringBuilder sb)
+        {
+            for (var ich = 0; ich < sb.Length; ich++)
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(sb[ich]) == UnicodeCategory.NonSpacingMark)
+                {
+                    sb.Remove(ich, 1);
+                    ich--;
+                }
+            }
+        }
+
+        protected void RemoveNotAllowedCharacters(StringBuilder sb)
+        {
+            // perf!
+            var allowedChars = Config.AllowedChars;
+            for (var i = 0; i < sb.Length; i++)
+            {
+                if (!allowedChars.Contains(sb[i]))
+                {
+                    sb.Remove(i, 1);
+                    i--;
+                }
+            }
+        }
+
+        protected static void CollapseDashes(StringBuilder sb)
+        {
+            var firstDash = true;
+            for (var i = 0; i < sb.Length; i++)
+            {
+                // first, clean whitepace
+                if (sb[i] == '-')
+                {
+                    if (firstDash)
+                    {
+                        firstDash = false;
+                    }
+                    else
+                    {
+                        sb.Remove(i, 1);
+                        i--;
+                    }
+                }
+                else
+                {
+                    firstDash = true;
+                }
+            }
+        }
+
+        protected static string DeleteCharacters(string str, Regex deniedCharactersRegex) => deniedCharactersRegex.Replace(str, string.Empty);
     }
 }
 
