@@ -42,6 +42,8 @@ With default settings, you will get an hyphenized, lowercase, alphanumeric versi
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="system.Text.Encoding.CodePages" Version="4.7.0" />
   </ItemGroup>
 
 </Project>
