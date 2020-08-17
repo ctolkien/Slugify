@@ -10,22 +10,18 @@ namespace Slugify.Core.Benchmarks
     {
         private static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<SlugifyBenchmarks>();
+            BenchmarkRunner.Run<SlugifyBenchmarks>();
         }
     }
 
     [MemoryDiagnoser]
     public class SlugifyBenchmarks
     {
-        private ISlugHelper _slugHelper;
-        private ISlugHelper _slugHelperImproved;
         private List<string> _textList;
 
         [GlobalSetup]
         public void GlobalSetup()
         {
-            _slugHelper = new SlugHelper();
-            _slugHelperImproved = new SlugHelperImproved();
             _textList = File.ReadAllLines("gistfile.txt").ToList();
         }
 
@@ -34,7 +30,11 @@ namespace Slugify.Core.Benchmarks
         {
             for (var i = 0; i < _textList.Count; i++)
             {
-                _slugHelper.GenerateSlug(_textList[i]);
+                new SlugHelper(new SlugHelper.Config
+                {
+                    // to enable legacy behaviour, for fairness
+                    DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
+                }).GenerateSlug(_textList[i]);
             }
         }
 
@@ -43,7 +43,7 @@ namespace Slugify.Core.Benchmarks
         {
             for (var i = 0; i < _textList.Count; i++)
             {
-                _slugHelperImproved.GenerateSlug(_textList[i]);
+                new SlugHelperImproved().GenerateSlug(_textList[i]);
             }
         }
     }
