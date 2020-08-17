@@ -5,13 +5,13 @@ namespace Slugify.Tests
 {
     public class SlugHelperTest
     {
-        private static ISlugHelper Create() => Create(new SlugHelperLegacy.Config());
-        private static ISlugHelper Create(SlugHelperLegacy.Config config) => new SlugHelper(config);
+        private static ISlugHelper Create() => Create(new Config());
+        private static ISlugHelper Create(Config config) => new SlugHelper(config);
 
         [Fact]
         public void TestEmptyConfig()
         {
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             Assert.True(config.ForceLowerCase);
             Assert.True(config.CollapseWhiteSpace);
             Assert.Single(config.StringReplacements);
@@ -22,7 +22,7 @@ namespace Slugify.Tests
         [Fact]
         public void TestDeniedCharacterConfig()
         {
-            var config = new SlugHelperLegacy.Config
+            var config = new Config
             {
                 DeniedCharactersRegex = ""
             };
@@ -33,7 +33,7 @@ namespace Slugify.Tests
         [Fact]
         public void TestDefaultConfig()
         {
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
 
             Assert.Single(config.StringReplacements);
             Assert.Equal("-", config.StringReplacements[" "]);
@@ -69,7 +69,7 @@ namespace Slugify.Tests
             const string original = "a  b    \n  c   \t    d";
             const string expected = "a-b-c-d";
 
-            var helper = Create(new SlugHelperLegacy.Config
+            var helper = Create(new Config
             {
                 CollapseDashes = false
             });
@@ -83,7 +83,7 @@ namespace Slugify.Tests
             const string original = "a  b    \n  c   \t    d";
             const string expected = "a--b-------c--------d";
 
-            var helper = Create(new SlugHelperLegacy.Config
+            var helper = Create(new Config
             {
                 CollapseDashes = false,
                 CollapseWhiteSpace = false
@@ -120,7 +120,7 @@ namespace Slugify.Tests
             const string original = "ab!#$%&/()=";
             const string expected = "b$";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.AllowedChars.Remove('a');
             config.AllowedChars.Add('$');
             var helper = Create(config);
@@ -135,7 +135,7 @@ namespace Slugify.Tests
             const string original = "!#$%&/()=";
             const string expected = "";
 
-            var helper = Create(new SlugHelperLegacy.Config
+            var helper = Create(new Config
             {
                 DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
             });
@@ -149,7 +149,7 @@ namespace Slugify.Tests
             const string original = "     abcde     ";
             const string expected = "bcde";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("a", " ");
 
             var helper = Create(config);
@@ -163,7 +163,7 @@ namespace Slugify.Tests
             const string original = "abcde";
             const string expected = "xyzde";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("a", "x");
             config.StringReplacements.Add("b", "y");
             config.StringReplacements.Add("c", "z");
@@ -179,7 +179,7 @@ namespace Slugify.Tests
             const string original = "a";
             const string expected = "c";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("a", "b");
             config.StringReplacements.Add("b", "c");
 
@@ -194,7 +194,7 @@ namespace Slugify.Tests
             const string original = "catdogfish";
             const string expected = "cdf";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("cat", "c");
             config.StringReplacements.Add("catdog", "e");
             config.StringReplacements.Add("dog", "d");
@@ -211,7 +211,7 @@ namespace Slugify.Tests
             const string original = "catdogfish";
             const string expected = "cdf";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("cat", "c");
             config.StringReplacements.Add("dog", "d");
             config.StringReplacements.Add("fish", "f");
@@ -227,7 +227,7 @@ namespace Slugify.Tests
             const string original = "a";
             const string expected = "ccdccdcc";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("a", "bdbdb");
             config.StringReplacements.Add("b", "cc");
 
@@ -242,7 +242,7 @@ namespace Slugify.Tests
             const string original = "cat";
             const string expected = "at";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("a", "c");
             config.StringReplacements.Add("cc", "a");
 
@@ -257,7 +257,7 @@ namespace Slugify.Tests
             const string original = "ycdabbadcz";
             const string expected = "yz";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("abba", "");
             config.StringReplacements.Add("cddc", "");
 
@@ -272,7 +272,7 @@ namespace Slugify.Tests
             const string original = "yababbabaz";
             const string expected = "yabbaz";
 
-            var config = new SlugHelperLegacy.Config();
+            var config = new Config();
             config.StringReplacements.Add("abba", "");
 
             var helper = Create(config);
@@ -325,7 +325,7 @@ namespace Slugify.Tests
             const string original = "foo & bar";
             const string expected = "foo--bar";
 
-            var helper = Create(new SlugHelperLegacy.Config
+            var helper = Create(new Config
             {
                 CollapseDashes = false
             });
@@ -339,7 +339,7 @@ namespace Slugify.Tests
             const string original = "  foo & bar  ";
             const string expected = "foo-bar";
 
-            var helper = Create(new SlugHelperLegacy.Config
+            var helper = Create(new Config
             {
                 TrimWhitespace = true
             });
@@ -353,7 +353,7 @@ namespace Slugify.Tests
             const string original = "unicode ♥ support";
             const string expected = "unicode-support";
 
-            var helper = Create(new SlugHelperLegacy.Config
+            var helper = Create(new Config
             {
                 TrimWhitespace = true,
                 CollapseDashes = true

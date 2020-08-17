@@ -9,13 +9,13 @@ namespace Slugify
     public class SlugHelper : ISlugHelper
     {
         private static readonly Dictionary<string, Regex> _deleteRegexMap = new Dictionary<string, Regex>();
-        private static readonly Lazy<SlugHelperLegacy.Config> _defaultConfig = new Lazy<SlugHelperLegacy.Config>(() => new SlugHelperLegacy.Config());
+        private static readonly Lazy<Config> _defaultConfig = new Lazy<Config>(() => new Config());
 
-        protected SlugHelperLegacy.Config Config { get; set; }
+        protected Config Config { get; set; }
 
         public SlugHelper() : this(_defaultConfig.Value) { }
 
-        public SlugHelper(SlugHelperLegacy.Config config)
+        public SlugHelper(Config config)
         {
             Config = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
         }
