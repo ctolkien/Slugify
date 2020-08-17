@@ -7,7 +7,7 @@
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
     <PackageReleaseNotes>
-        3.0.0 - Much improved performance and memory usage. Potentially some breaking changes but none we're aware of
+        3.0.0 - Much improved performance and memory usage. Config file renamed. Potentially some breaking changes but none we're aware of
         2.4.0 - NetStandard 2.0 support only
         2.3.0 - ISlugHelper interface added. Thanks @jcharlesworthuk
         2.2.2 - NetStandard 2.0

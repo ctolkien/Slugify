@@ -30,7 +30,7 @@ namespace Slugify.Core.Benchmarks
         {
             for (var i = 0; i < _textList.Count; i++)
             {
-                new SlugHelper(new Config
+                new SlugHelper(new SlugHelperConfiguration
                 {
                     // to enable legacy behaviour, for fairness
                     DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"

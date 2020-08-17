@@ -6,7 +6,7 @@ namespace Slugify
     /// <summary>
     /// Used to configure the a <see cref="SlugHelper"/> instance
     /// </summary>
-    public class Config
+    public class SlugHelperConfiguration
     {
         // TODO: Implement a source generator so this can be done at compile time :)
         private static readonly char[] s_allowedChars =
