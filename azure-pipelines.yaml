@@ -32,7 +32,7 @@ stages:
             displayName: "Test"
             inputs:
               command: test
-              arguments: '-c $(buildConfiguration) --collect "Code Coverage"'
+              arguments: '-c $(buildConfiguration) --collect "XPlat Code Coverage"'
           - task: DotNetCoreCLI@2
             displayName: "Pack Nuget"
             inputs:
