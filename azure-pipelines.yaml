@@ -38,8 +38,9 @@ stages:
             inputs:
               codeCoverageTool: 'Cobertura'
               summaryFileLocation: $(Agent.TempDirectory)/**/coverage.cobertura.xml'
-          - script: |
-              bash <(curl -s https://codecov.io/bash)
+          - bash: |
+              curl -s https://codecov.io/bash >> codecov.sh |
+              . codecov.sh' -f '$(Agent.TempDirectory)/**/coverage.cobertura.xml' -Z
             displayName: 'Upload to codecov.io' 
             condition:              
           - task: DotNetCoreCLI@2
