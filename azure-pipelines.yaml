@@ -32,7 +32,22 @@ stages:
             displayName: "Test"
             inputs:
               command: test
+              arguments: '-c $(buildConfiguration)'
+              publishTestResults: false
+            condition: and(succeeded(), eq(variables.vmImage, 'macOS-latest'))              
+          - task: DotNetCoreCLI@2
+            displayName: "Test"
+            inputs:
+              command: test
+              arguments: '-c $(buildConfiguration) --collect "Code Coverage"'
+            condition: and(succeeded(), eq(variables.vmImage, 'windows-latest'))
+
+          - task: DotNetCoreCLI@2
+            displayName: "Test"
+            inputs:
+              command: test
               arguments: '-c $(buildConfiguration) --collect "XPlat Code Coverage"'
+            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))              
           - script: |
               bash <(curl -s https://codecov.io/bash) -f $(Agent.TempDirectory)/**/*.xml -d
             displayName: 'Upload to codecov.io'
