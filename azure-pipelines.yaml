@@ -47,6 +47,7 @@ stages:
             inputs:
               command: test
               arguments: '-c $(buildConfiguration) --collect "XPlat Code Coverage"'
+              publishTestResults: false
             condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))              
           - script: |
               bash <(curl -s https://codecov.io/bash) -f $(Agent.TempDirectory)/**/*.xml -d
