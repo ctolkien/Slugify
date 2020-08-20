@@ -36,15 +36,15 @@ stages:
           - script: |
               bash <(curl -s https://codecov.io/bash) -f $(Agent.TempDirectory)/**/*.xml
             displayName: 'Upload to codecov.io'
-            condition: and(succeeded(), eq($(vmImage), 'ubuntu-latest'))
+            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))
           - task: DotNetCoreCLI@2
             displayName: "Pack Nuget"
-            condition: and(succeeded(), eq($(vmImage), 'ubuntu-latest'))
+            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))
             inputs:
               command: pack
               arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
           - task: PublishBuildArtifacts@1
-            condition: and(succeeded(), eq($(vmImage), 'ubuntu-latest'))
+            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))
             inputs:
               pathtoPublish: '$(Build.ArtifactStagingDirectory)'
               artifactName: drop
