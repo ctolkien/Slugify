@@ -34,7 +34,7 @@ stages:
               command: test
               arguments: '-c $(buildConfiguration) --collect "XPlat Code Coverage"'
           - script: |
-              bash <(curl -s https://codecov.io/bash)
+              bash <(curl -s https://codecov.io/bash) -v -f $(Agent.TempDirectory)/**/*.xml
             displayName: 'Upload to codecov.io'
           - task: DotNetCoreCLI@2
             displayName: "Pack Nuget"
