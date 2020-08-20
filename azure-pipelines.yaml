@@ -37,7 +37,7 @@ stages:
           - task: PublishCodeCoverageResults@1
             inputs:
               codeCoverageTool: 'Cobertura'
-              summaryFileLocation: $(Agent.TempDirectory)/**/coverage.cobertura.xml'
+              summaryFileLocation: $(System.DefaultWorkingDirectory)/**/coverage.cobertura.xml'
           - bash: |
               curl -s https://codecov.io/bash >> codecov.sh |
               . codecov.sh' -f '$(Agent.TempDirectory)/**/coverage.cobertura.xml' -Z
