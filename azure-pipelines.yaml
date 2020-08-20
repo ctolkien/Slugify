@@ -32,7 +32,11 @@ stages:
             displayName: "Test"
             inputs:
               command: test
-              arguments: '-c $(buildConfiguration) --collect "XPlat Code Coverage"'
+              arguments: '-c $(buildConfiguration) --collect "XPlatCode Coverage"'
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: '**/*.cobertura.xml'
           - task: DotNetCoreCLI@2
             displayName: "Pack Nuget"
             inputs:
