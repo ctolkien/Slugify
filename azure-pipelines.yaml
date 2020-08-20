@@ -33,11 +33,13 @@ stages:
             inputs:
               command: test
               arguments: '-c $(buildConfiguration) --collect "XPlat Code Coverage"'
+          - script: echo $(Agent.TempDirectory)
           - task: PublishCodeCoverageResults@1
             inputs:
               codeCoverageTool: 'Cobertura'
               summaryFileLocation: $(Agent.TempDirectory)/coverage.cobertura.xml'
-          - bash:  <(curl -s https://codecov.io/bash)
+          - script: |
+              bash <(curl -s https://codecov.io/bash)
             displayName: 'Upload to codecov.io' 
             condition:              
           - task: DotNetCoreCLI@2
