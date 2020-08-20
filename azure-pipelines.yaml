@@ -33,11 +33,8 @@ stages:
             inputs:
               command: test
               arguments: '-c $(buildConfiguration) --collect "XPlat Code Coverage"'
-          - bash: |
-              ls **/*.xml -l
-            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))
           - script: |
-              bash <(curl -s https://codecov.io/bash) -f $(Agent.TempDirectory)/**/*.xml
+              bash <(curl -s https://codecov.io/bash) -f $(Agent.TempDirectory)/**/*.xml -d
             displayName: 'Upload to codecov.io'
             condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))
           - task: DotNetCoreCLI@2
