@@ -36,10 +36,10 @@ stages:
           - task: PublishCodeCoverageResults@1
             inputs:
               codeCoverageTool: 'Cobertura'
-              summaryFileLocation: '**/*.cobertura.xml'
-          - script: |
-              bash <(curl -s https://codecov.io/bash)
-            displayName: 'Upload to codecov.io'              
+              summaryFileLocation: $(Agent.TempDirectory)/coverage.cobertura.xml'
+          - bash:  <(curl -s https://codecov.io/bash)
+            displayName: 'Upload to codecov.io' 
+            condition:              
           - task: DotNetCoreCLI@2
             displayName: "Pack Nuget"
             inputs:
