@@ -1,0 +1,83 @@
+
+variables:
+  buildConfiguration: 'Release'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+stages:
+  - stage: Build
+    jobs:
+      - job:
+        displayName: "Building and Test for"
+        strategy:
+          matrix:
+            Windows:
+              vmImage: 'windows-latest'
+            Ubuntu:
+              vmImage: 'ubuntu-latest'
+            Mac:
+              vmImage: 'macOS-latest'
+        pool:
+          vmImage: $(vmImage)
+        steps:
+          # - task: UseDotNet@2
+          #   displayName: "Install SDK v3.1"
+          #   inputs:
+          #     version: 3.1.x
+          - task: DotNetCoreCLI@2
+            displayName: "Build Solution"
+            inputs:
+              command: build
+              arguments: '-c $(buildConfiguration)'
+          - task: DotNetCoreCLI@2
+            displayName: "Test"
+            inputs:
+              command: test
+              arguments: '-c $(buildConfiguration)'
+              publishTestResults: false
+            condition: and(succeeded(), eq(variables.vmImage, 'macOS-latest'))              
+          - task: DotNetCoreCLI@2
+            displayName: "Test"
+            inputs:
+              command: test
+              arguments: '-c $(buildConfiguration) --collect "Code Coverage"'
+            condition: and(succeeded(), eq(variables.vmImage, 'windows-latest'))
+
+          - task: DotNetCoreCLI@2
+            displayName: "Test"
+            inputs:
+              command: test
+              arguments: '-c $(buildConfiguration) --collect "XPlat Code Coverage"'
+              publishTestResults: false
+            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))              
+          - script: |
+              bash <(curl -s https://codecov.io/bash) -f $(Agent.TempDirectory)/**/*.xml -d
+            displayName: 'Upload to codecov.io'
+            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))
+          - task: DotNetCoreCLI@2
+            displayName: "Pack Nuget"
+            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))
+            inputs:
+              command: pack
+              arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
+          - task: PublishBuildArtifacts@1
+            condition: and(succeeded(), eq(variables.vmImage, 'ubuntu-latest'))
+            inputs:
+              pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              artifactName: drop
+  - stage: Deploy
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/release'))
+    jobs:
+      - deployment: 
+        environment: Nuget
+        strategy:
+            runOnce:
+              deploy:
+                steps:
+                - task: NuGetCommand@2
+                  displayName: 'NuGet push'
+                  inputs:
+                    command: 'push'
+                    packagesToPush: '$(Pipeline.Workspace)/**/*.nupkg;'
+                    nuGetFeedType: 'external'
+                    publishFeedCredentials: 'Nuget.Org'
