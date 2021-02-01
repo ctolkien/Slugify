@@ -46,8 +46,9 @@ namespace Slugify
                     _deleteRegexMap.Add(Config.DeniedCharactersRegex, deniedCharactersRegex);
                 }
 
+                var currentValue = sb.ToString();
                 sb.Clear();
-                sb.Append(DeleteCharacters(sb.ToString(), deniedCharactersRegex));
+                sb.Append(DeleteCharacters(currentValue, deniedCharactersRegex));
             }
 
             if (Config.CollapseDashes)

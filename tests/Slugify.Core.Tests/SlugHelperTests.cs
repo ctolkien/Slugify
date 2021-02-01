@@ -143,6 +143,21 @@ namespace Slugify.Tests
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
 
+
+        [Fact]
+        public void TestDeniedCharacterDeletionLegacyKeepsAllowedCharacters()
+        {
+            const string original = "Abc-123.$1$_x";
+            const string expected = "abc-123.1_x";
+
+            var helper = Create(new SlugHelperConfiguration
+            {
+                DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
+            });
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
         [Fact]
         public void TestCharacterReplacementWithWhitespace()
         {
