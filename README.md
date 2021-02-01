@@ -34,7 +34,7 @@ Upgrading from 2.x to 3.x
 -------------------------
 
 * 3.0 is a significantly faster and less memory intensive version of the Slugifier. Whilst effort has been made to maintain backwards compatability, there may be some breaking changes.
-* The `SlugHelper.Config` nested class has been renamed to just `SlugHelperConfig`.
+* The `SlugHelper.Config` nested class has been renamed to just `SlugHelperConfiguration`.
 
 
 Basic Usage
@@ -65,11 +65,11 @@ public class MyApp
 Configuration
 -------------
 
-You can provide a _SlugHelperConfig_ instance to _SlugHelper_'s constructor to customize the helper's behavior:
+You can provide a _SlugHelperConfiguration_ instance to _SlugHelper_'s constructor to customize the helper's behavior:
 
 ```csharp
 // Creating a configuration object
-var config = new SlugHelperConfig();
+var config = new SlugHelperConfiguration();
 
 // Replace spaces with a dash
 config.StringReplacements.Add(" ", "-");
@@ -96,11 +96,11 @@ SlugHelper helper = new SlugHelper(config);
 In fact, the above values are so common they're the default ones! So last code could be rewritten as:
 
 ```csharp
-var config = new SlugHelperConfig();
+var config = new SlugHelperConfiguration();
 SlugHelper helper = new SlugHelper(config);
 ```
 
-One more thing: _SlugHelperConfig_ is used when you call the parameterless _SlugHelper_ constructor. Then ...
+One more thing: _SlugHelperConfiguration_ is used when you call the parameterless _SlugHelper_ constructor. Then ...
 
 ```csharp
 SlugHelper helper = new SlugHelper();
