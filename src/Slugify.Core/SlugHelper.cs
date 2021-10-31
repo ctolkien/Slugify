@@ -116,14 +116,17 @@ namespace Slugify
         {
             foreach (var replacement in Config.StringReplacements)
             {
+                var search = replacement.Key.Normalize(NormalizationForm.FormD);
+                var replace = replacement.Value.Normalize(NormalizationForm.FormD);
+
                 for (var i = 0; i < sb.Length; i++)
                 {
-                    if (SubstringEquals(sb, i, replacement.Key))
+                    if (SubstringEquals(sb, i, search))
                     {
-                        sb.Remove(i, replacement.Key.Length);
-                        sb.Insert(i, replacement.Value);
+                        sb.Remove(i, search.Length);
+                        sb.Insert(i, replace);
 
-                        i += replacement.Value.Length - 1;
+                        i += replace.Length - 1;
                     }
                 }
             }

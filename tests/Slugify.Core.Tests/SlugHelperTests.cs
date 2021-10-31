@@ -252,6 +252,42 @@ namespace Slugify.Tests
         }
 
         [Fact]
+        public void TestCharacterReplacementUmlauts()
+        {
+            var config = new SlugHelperConfiguration()
+            {
+                StringReplacements =
+                {
+                    {"Ä", "Ae" },
+                    {"Ö", "Oe" },
+                    {"Ü", "Ue" },
+                    {"ä", "ae" },
+                    {"ö", "oe" },
+                    {"ü", "ue" },
+                    {"ß", "ss" }
+                },
+            };
+
+            var helper = Create(config);
+            Assert.Equal("aeoeueaeoeuess", helper.GenerateSlug("äöüÄÖÜß"));
+        }
+
+        [Fact]
+        public void TestCharacterReplacementDiacritics()
+        {
+            var config = new SlugHelperConfiguration();
+            config.StringReplacements.Add("Å", "AA");
+            config.StringReplacements.Add("å", "aa");
+            config.StringReplacements.Add("Æ", "AE");
+            config.StringReplacements.Add("æ", "ae");
+            config.StringReplacements.Add("Ø", "OE");
+            config.StringReplacements.Add("ø", "oe");
+
+            var helper = Create(config);
+            Assert.Equal("aa-aa-ae-ae-oe-oe", helper.GenerateSlug("Å å Æ æ Ø ø"));
+        }
+
+        [Fact]
         public void TestRecursiveReplacement()
         {
             const string original = "ycdabbadcz";
