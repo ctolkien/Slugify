@@ -5,7 +5,6 @@ Slugify Core
 
 
 [![.NET](https://github.com/ctolkien/Slugify/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ctolkien/Slugify/actions/workflows/dotnet.yml)
-[![codecov](https://codecov.io/gh/ctolkien/Slugify/branch/master/graph/badge.svg)](https://codecov.io/gh/ctolkien/Slugify)
 ![Version](https://img.shields.io/nuget/v/slugify.core.svg?maxAge=2000)
 [![license](https://img.shields.io/github/license/ctolkien/Slugify.svg?maxAge=2592000)]()
 
