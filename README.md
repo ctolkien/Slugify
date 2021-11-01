@@ -4,7 +4,7 @@ Slugify Core
 ### This is a fork of the original project here: [https://github.com/fcingolani/Slugify](https://github.com/fcingolani/Slugify). This has been updated for .NET Standard 2.0 support (older versions support .NET Standard down to 1.3).
 
 
-[![Build Status](https://dev.azure.com/chadtolkien/Slugify/_apis/build/status/ctolkien.Slugify?branchName=master)](https://dev.azure.com/chadtolkien/Slugify/_build/latest?definitionId=6&branchName=master)
+[![.NET](https://github.com/ctolkien/Slugify/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ctolkien/Slugify/actions/workflows/dotnet.yml)
 [![codecov](https://codecov.io/gh/ctolkien/Slugify/branch/master/graph/badge.svg)](https://codecov.io/gh/ctolkien/Slugify)
 ![Version](https://img.shields.io/nuget/v/slugify.core.svg?maxAge=2000)
 [![license](https://img.shields.io/github/license/ctolkien/Slugify.svg?maxAge=2592000)]()
