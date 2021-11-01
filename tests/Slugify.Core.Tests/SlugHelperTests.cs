@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Xunit;
 
 namespace Slugify.Tests
@@ -411,6 +412,20 @@ namespace Slugify.Tests
             });
 
             Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact(Skip = "Is this actually a bug?")]
+        public void TurkishEncodingOfI()
+        {
+            //Set culture to Turkish
+            CultureInfo.CurrentCulture = new CultureInfo("tr-TR");
+            const string original = "FIFA 18";
+            const string expected = "fıfa 18";
+
+            var helper = Create();
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+
         }
     }
 }
