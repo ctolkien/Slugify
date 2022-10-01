@@ -37,6 +37,8 @@ namespace Slugify
         }
         public bool CollapseDashes { get; set; } = true;
         public bool TrimWhitespace { get; set; } = true;
+        
+        public int? MaxLength { get; set; }
     }
 }
 

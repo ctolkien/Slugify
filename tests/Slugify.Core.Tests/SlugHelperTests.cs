@@ -414,6 +414,21 @@ namespace Slugify.Tests
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
 
+        [Theory]
+        [InlineData(null, "abcdefghijgklmnopqrstuvwxy", "abcdefghijgklmnopqrstuvwxy")]
+        [InlineData(8, "abcdefghijgklmnopqrstuvwxy", "abcdefgh")]
+        [InlineData(8, "ab c d e fgh", "ab-c-d-e")]
+        [InlineData(7, "ab c d e fgh", "ab-c-d")]
+        [InlineData(8, "ab c d ", "ab-c-d")]
+        public void MaxLengthGivenTrimsUnnecessaryChars(int? length, string input, string expected)
+        {
+            var helper = Create(new SlugHelperConfiguration()
+            {
+                MaxLength = length
+            });
+            Assert.Equal(expected, helper.GenerateSlug(input));
+        }
+
         [Fact(Skip = "Is this actually a bug?")]
         public void TurkishEncodingOfI()
         {
