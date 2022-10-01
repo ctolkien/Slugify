@@ -88,6 +88,9 @@ config.CollapseWhiteSpace = true;
 // Remove everything that's not a letter, number, hyphen, dot, or underscore
 config.DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]";
 
+// No Character limit to the slug lenght
+config.MaxLength = null;
+
 // Create a helper instance with our new configuration
 SlugHelper helper = new SlugHelper(config);
 ```
@@ -140,6 +143,12 @@ Any character matching this Regular Expression will be deleted from the resultin
 Type: _Boolean_. Default: **true**
 
 This will condense multiple dashes (e.g. `foo---bar`) down to a single dash (`foo-bar`). This is useful to avoid scenarios like `foo & bar` becoming `foo--bar`.
+
+#### MaxLength
+
+Type: _int?_. Default: **null**
+
+This will limit the length of the generated slug to the number of chars given by the parameter.
 
 License
 -------

@@ -56,6 +56,11 @@ namespace Slugify
                 CollapseDashes(sb);
             }
 
+            if (Config.MaxLength.HasValue)
+            {
+                TrimToMaxLength(sb, Config.MaxLength.Value);
+            }
+
             return sb.ToString();
         }
 
@@ -209,6 +214,14 @@ namespace Slugify
         }
 
         protected static string DeleteCharacters(string str, Regex deniedCharactersRegex) => deniedCharactersRegex.Replace(str, string.Empty);
+
+        protected static void TrimToMaxLength(StringBuilder sb, int maxLength)
+        {
+            if (sb.Length > maxLength)
+            {
+                sb.Remove(maxLength, sb.Length - maxLength);
+            }
+        }
     }
 }
 
