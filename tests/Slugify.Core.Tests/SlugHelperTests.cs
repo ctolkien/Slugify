@@ -418,7 +418,7 @@ namespace Slugify.Tests
         [InlineData(null, "abcdefghijgklmnopqrstuvwxy", "abcdefghijgklmnopqrstuvwxy")]
         [InlineData(8, "abcdefghijgklmnopqrstuvwxy", "abcdefgh")]
         [InlineData(8, "ab c d e fgh", "ab-c-d-e")]
-        [InlineData(7, "ab c d e fgh", "ab-c-d")]
+        [InlineData(7, "ab c d e", "ab-c-d")] 
         [InlineData(8, "ab c d ", "ab-c-d")]
         public void MaxLengthGivenTrimsUnnecessaryChars(int? length, string input, string expected)
         {
