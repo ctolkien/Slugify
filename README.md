@@ -1,18 +1,17 @@
 Slugify Core
 =======
 
-### This is a fork of the original project here: [https://github.com/fcingolani/Slugify](https://github.com/fcingolani/Slugify). This has been updated for .NET Standard 2.0 support (older versions support .NET Standard down to 1.3).
+> This is a fork of the original project here: [https://github.com/fcingolani/Slugify](https://github.com/fcingolani/Slugify). This has been updated for .NET Standard 2.0 support (older versions support .NET Standard down to 1.3).
 
+[![Build status](https://github.com/ctolkien/Slugify/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ctolkien/Slugify/actions/workflows/dotnet.yml)
+[![Current NuGet release](https://img.shields.io/nuget/v/slugify.core.svg?maxAge=2000)](https://www.nuget.org/packages/Slugify.Core)
+[![MIT license](https://img.shields.io/github/license/ctolkien/Slugify.svg?maxAge=2592000)](https://github.com/ctolkien/Slugify/blob/master/LICENSE)
 
-[![.NET](https://github.com/ctolkien/Slugify/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ctolkien/Slugify/actions/workflows/dotnet.yml)
-![Version](https://img.shields.io/nuget/v/slugify.core.svg?maxAge=2000)
-[![license](https://img.shields.io/github/license/ctolkien/Slugify.svg?maxAge=2592000)]()
+Simple [Slug / Clean URL](http://en.wikipedia.org/wiki/Slug_%28web_publishing%29#Slug) generator helper for Microsoft .NET.
 
-Simple [Slug / Clean URL](http://en.wikipedia.org/wiki/Slug_%28web_publishing%29#Slug) generator helper for Microsoft .NET framework.
+With default settings, you will get an **hyphenized**, **lowercase**, **alphanumeric** version of any string you please, with any [diacritics](http://en.wikipedia.org/wiki/Diacritic) removed, whitespace and dashes collapsed, and whitespace trimmed.
 
-With default settings, you will get an **hyphenized**, **lowercase**, **alphanumeric** version of any string you please, with any [diacritics](http://en.wikipedia.org/wiki/Diacritic) removed and collapsed whitespace, collapsed dashes and trimmed whitespace.
-
-In example, having:
+For example, having:
 
 > a ambição cerra o coração
 
@@ -29,139 +28,170 @@ You can get the [Slugify NuGet package](https://www.nuget.org/packages/Slugify.C
 PM> Install-Package Slugify.Core
 ```
 
+Or running `dotnet add package Slugify.Core` from the command line.
+
 Upgrading from 2.x to 3.x
 -------------------------
 
 * 3.0 is a significantly faster and less memory intensive version of the Slugifier. Whilst effort has been made to maintain backwards compatability, there may be some breaking changes.
 * The `SlugHelper.Config` nested class has been renamed to just `SlugHelperConfiguration`.
 
-
 Basic Usage
 -----------
 
-It's really simple! Just instantiate _SlugHelper_ and call its _GenerateSlug_ with the **string** you want to convert; it'll return the URL Safe version:
-
+It's really simple! Just instantiate `SlugHelper` and call its `GenerateSlug` method with the **string** you want to convert; it'll return the slugified version:
 
 ```csharp
 using Slugify;
 
 public class MyApp
 {
-   public static void Main()
-   {
-      SlugHelper helper = new SlugHelper();
+    public static void Main()
+    {
+        SlugHelper helper = new SlugHelper();
 
-      String title = "OLA ke ase!";
+        String title = "OLA ke ase!";
 
-      String slug = helper.GenerateSlug(title); // "ola-ke-ase"
+        String slug = helper.GenerateSlug(title);
 
-      Console.WriteLine(slug);
-   }
+        Console.WriteLine(slug); // "ola-ke-ase"
+    }
 }
-
 ```
 
 Configuration
 -------------
 
-You can provide a _SlugHelperConfiguration_ instance to _SlugHelper_'s constructor to customize the helper's behavior:
+The default configuration of `SlugHelper` will make the following changes to the passed input in order to generate a slug:
+
+- Transform all characters to lower-case, to produce a lower-case slug.
+- Trim all leading and trailing whitespace.
+- Collapse all consecutive whitespace into a single space.
+- Replace spaces with a dash.
+- Remove all non-alphanumerical ASCII characters.
+- Collapse all consecutive dashes into a single one.
+
+You can customize most of this behavior by passing a `SlugHelperConfiguration` object to the `SlugHelper` constructor. For example, the following example will keep upper-case characters in the input and provides a custom handling for ampersands in the input:
 
 ```csharp
 // Creating a configuration object
 var config = new SlugHelperConfiguration();
 
-// Replace spaces with a dash
-config.StringReplacements.Add(" ", "-");
+// Add individual replacement rules
+config.StringReplacements.Add("&", "-");
+config.StringReplacements.Add(",", "-");
 
-// We want a lowercase Slug
-config.ForceLowerCase = true;
-
-// Will collapse multiple seqential dashes down to a single one
-config.CollapseDashes = true;
-
-// Will trim leading and trailing whitespace
-config.TrimWhitespace = true;
-
-// Colapse consecutive whitespace chars into one
-config.CollapseWhiteSpace = true;
-
-// Remove everything that's not a letter, number, hyphen, dot, or underscore
-config.DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]";
+// Keep the casing of the input string
+config.ForceLowerCase = false;
 
 // Create a helper instance with our new configuration
-SlugHelper helper = new SlugHelper(config);
+var helper = new SlugHelper(config);
+
+var result = helper.GenerateSlug("Simple,short&quick Example");
+Console.WriteLine(result); // Simple-short-quick-Example
 ```
 
-In fact, the above values are so common they're the default ones! So last code could be rewritten as:
+The following options can be configured with the `SlugHelperConfiguration`:
 
-```csharp
-var config = new SlugHelperConfiguration();
-SlugHelper helper = new SlugHelper(config);
-```
+### `ForceLowerCase`
+This specifies whether the output string should be converted to lower-case. If set to `false`, the original casing will be preserved. The lower-case conversion happens before any other character replacements are being made.
 
-One more thing: _SlugHelperConfiguration_ is used when you call the parameterless _SlugHelper_ constructor. Then ...
+-  Default value: `true`
 
-```csharp
-SlugHelper helper = new SlugHelper();
-```
+### `CollapseWhiteSpace`
+This specifies whether consecutive whitespace should be replaced by just one space (`" "`). The whitespace will be collapsed before any other character replacements are being made.
 
-... is the same as running the code we had in first place.
+- Default value: `true`
 
-### Options
+### `TrimWhitespace`
+This specifies whether leading and trailing whitespace should be removed from the input string. The whitespace will be trimmed before any other character replacements are being made.
 
-#### CharacterReplacements
+- Default value: `true`
 
-Type: _Dictionary&lt;String, String&gt;_. Default: [" ": "-"].
+### `CollapseDashes`
+This specifies wehther consecutive dashes (`"-"`) should be collapsed into a single dash. This is useful to avoid scenarios like `"foo & bar"` becoming `"foo--bar"`. Dashes will be collapsed after all other string replacements have been made before the final result string is returned.
 
-Will replace the specified keys with their associated value.
+- Default value: `true`
 
-By default, will replace spaces with hyphens.
+### `StringReplacements`
+This is a dictionary containing a mapping of characters that should be replaced individually before the translation happens. By default, this will replace space characters with a hyphen.
 
-#### ForceLowerCase
+String replacements are being made after whitespace has been trimmed and collapsed, after the input string has been converted to lower-case characters, but before any characters are removed, to allow replacing characters that would otherwise be just removed.
 
-Type: _Boolean_. Default: **true**.
+-  Default value:
 
-Setting it to true will convert output string to be LowerCase. If false, original casing will be preserved.
+   ```csharp
+   new Dictionary<string, string> {
+      [" "] = "-", // replace space with a hyphen
+   }
+   ```
 
-#### CollapseWhiteSpace
+-  Examples:
 
-Type: _Boolean_. Default: **true**.
+   ```csharp
+   var config = new SlugHelperConfiguration();
 
-Setting it to true will replace consecutive whitespace characters by just one space (" ").
+   // replace the dictionary completely
+   config.StringReplacements = new() {
+       ["ä"] = "ae",
+       ["ö"] = "oe",
+       ["ü"] = "ue",
+   };
 
-#### DeniedCharactersRegex
+   // or add individual replacements to it
+   config.StringReplacements.Add("ß", "ss");
+   ```
 
-Type: _String_. Default: **[^a-zA-Z0-9\-\._]**.
+### `AllowedChars`
+Set of characters that are allowed in the slug, which will be kept when the input string is being processed. By default, this contains all ASCII characters, the full stop, the dash and the underscore. This is the preferred way of controlling which characters should be replaced when generating the slug.
 
-Any character matching this Regular Expression will be deleted from the resulting string.
+Characters that are not allowed will be replaced after string replacements are completed.
 
-#### CollapseDashes
+-  Default value: Alphanumerical ASCII characters, the full stop (`.`), the dash (`-`), and the underscore (`-`).
+   `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._`)
 
-Type: _Boolean_. Default: **true**
+-  Examples:
 
-This will condense multiple dashes (e.g. `foo---bar`) down to a single dash (`foo-bar`). This is useful to avoid scenarios like `foo & bar` becoming `foo--bar`.
+   ```csharp
+   var config = new SlugHelperConfiguration();
 
-License
--------
+   // add individual characters to the list of allowed characters
+   config.AllowedChars.Add('!');
 
-The MIT License (MIT)
+   // remove previously added or default characters
+   config.AllowedChars.Remove('.');
+   ```
 
-Copyright (c) 2013 Federico Cingolani
+### `DeniedCharactersRegex`
+Alternative method of specifying which characters will be allowed in the slug, which will replace the functionality of the `AllowedChars` set. The value must be a valid regular expression that specifies which characters *are to be removed*. Every match of this regular expression in the input string will be removed. The removal happens after string replacements are completed.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This functionality is kept in place for legacy compatibility reasons and since it relies on regular expressions, it will perform worse than using the `AllowedChars` way of specifying.
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+Specifying the `DeniedCharactersRegex` option will disable the character removal behavior from the `AllowedChars` option.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+-  Default value: `null`
+
+-  Examples:
+
+   ```csharp
+   var helper = new SlugHelper(new SlugHelperConfiguration
+   {
+       // this is equivalent to the default behavior from `AllowChars`
+       DeniedCharactersRegex = "[^a-zA-Z0-9._-]"
+   });
+   Console.WriteLine(helper.GenerateSlug("OLA ke ase!")); // "ola-ke-ase"
+
+   helper = new SlugHelper(new SlugHelperConfiguration
+   {
+       // remove certain characters explicitly
+       DeniedCharactersRegex = @"[abcdef]"
+   });
+   Console.WriteLine(helper.GenerateSlug("abcdefghijk")); // "ghijk"
+
+   helper = new SlugHelper(new SlugHelperConfiguration
+   {
+       // remove more complex matches
+       DeniedCharactersRegex = @"foo|bar"
+   });
+   Console.WriteLine(helper.GenerateSlug("this is an foo example")); // "this-is-an-example"
+   ```
