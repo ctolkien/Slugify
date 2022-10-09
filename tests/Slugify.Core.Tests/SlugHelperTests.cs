@@ -54,7 +54,7 @@ namespace Slugify.Tests
         }
 
         [Fact]
-        public void TestLoweCaseEnforcement()
+        public void TestLowerCaseEnforcement()
         {
             const string original = "AbCdE";
             const string expected = "abcde";
@@ -205,6 +205,21 @@ namespace Slugify.Tests
         }
 
         [Fact]
+        public void TestCharacterDoubleReplacementReversedOrder()
+        {
+            const string original = "a";
+            const string expected = "b";
+
+            var config = new SlugHelperConfiguration();
+            config.StringReplacements.Add("b", "c");
+            config.StringReplacements.Add("a", "b");
+
+            var helper = Create(config);
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
         public void TestCharacterReplacementOrdering()
         {
             const string original = "catdogfish";
@@ -222,7 +237,7 @@ namespace Slugify.Tests
         }
 
         [Fact]
-        public void TestCharacterReplacementShorting()
+        public void TestCharacterReplacementShortening()
         {
             const string original = "catdogfish";
             const string expected = "cdf";
@@ -274,6 +289,44 @@ namespace Slugify.Tests
             {
                 StringReplacements =
                 {
+                    {"ä", "ae" },
+                    {"ö", "oe" },
+                    {"ü", "ue" },
+                    {"ß", "ss" }
+                },
+            };
+
+            var helper = Create(config);
+            Assert.Equal("aeoeueaeoeuess", helper.GenerateSlug("äöüÄÖÜß"));
+        }
+
+        [Fact]
+        public void TestCharacterReplacementUmlautsUppercaseSkipped()
+        {
+            var config = new SlugHelperConfiguration()
+            {
+                ForceLowerCase = false,
+                StringReplacements =
+                {
+                    {"ä", "ae" },
+                    {"ö", "oe" },
+                    {"ü", "ue" },
+                    {"ß", "ss" }
+                },
+            };
+
+            var helper = Create(config);
+            Assert.Equal("aeoeueAOUss", helper.GenerateSlug("äöüÄÖÜß"));
+        }
+
+        [Fact]
+        public void TestCharacterReplacementUmlautsUppercaseReplaced()
+        {
+            var config = new SlugHelperConfiguration()
+            {
+                ForceLowerCase = false,
+                StringReplacements =
+                {
                     {"Ä", "Ae" },
                     {"Ö", "Oe" },
                     {"Ü", "Ue" },
@@ -285,7 +338,7 @@ namespace Slugify.Tests
             };
 
             var helper = Create(config);
-            Assert.Equal("aeoeueaeoeuess", helper.GenerateSlug("äöüÄÖÜß"));
+            Assert.Equal("aeoeueAeOeUess", helper.GenerateSlug("äöüÄÖÜß"));
         }
 
         [Fact]
