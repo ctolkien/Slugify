@@ -1,0 +1,25 @@
+name: 'NuGet Deployment'
+
+on:
+  workflow_call:
+  workflow_dispatch:
+    
+    
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: artifact
+      - name: Display structure of downloaded files
+        run: ls -R          
+      - name: Push
+        run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create GitHub Release
+        run: "gh release create 'Release ${{ env.ReleaseName }}' --generate-notes"
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}          
+        
