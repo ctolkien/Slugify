@@ -25,7 +25,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Pack
       if: ${{ github.ref == 'refs/heads/master' }}
-      run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/ --version-suffix ${{ vars.GITHUB_SHA }}  
+      run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/ --version-suffix ${{ github.GITHUB_SHA }}  
     - name: Push
       if: ${{ github.ref == 'refs/heads/master' }}
       run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
