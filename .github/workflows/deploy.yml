@@ -4,22 +4,18 @@ on:
   workflow_call:
   workflow_dispatch:
     
-    
 jobs:
   deployment:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: artifact
-      - name: Display structure of downloaded files
-        run: ls -R          
+      - name: Pack
+        run: dotnet pack --configuration release --output ${{ github.workspace}}/output/
       - name: Push
-        run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
+        run: dotnet nuget push ${{ github.workspace}}/output/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create GitHub Release
-        run: "gh release create 'Release ${{ env.ReleaseName }}' --generate-notes"
+        run: "gh release create 'Release Test' --draft --generate-notes"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}          
         
