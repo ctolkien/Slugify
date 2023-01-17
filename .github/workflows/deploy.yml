@@ -16,11 +16,11 @@ jobs:
       - name: Pack
         run: dotnet pack --configuration release --output ${{ github.workspace}}/output/
       - name: Push
-        run: dotnet nuget push ${{ github.workspace}}/output/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
+        run: dotnet nuget push ${{ github.workspace}}/output/*.nupkg --api-key ${{ secrets.NuGetToken }} --skip-duplicate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create GitHub Release
-        run: "gh release create 'Release Test' --draft --generate-notes"
+        run: "gh release create 'Release Test' --generate-notes"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}          
         

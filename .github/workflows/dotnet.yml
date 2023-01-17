@@ -24,13 +24,10 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
     - name: Pack
-      run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/
-    - uses: actions/upload-artifact@v2
-      with:
-        path: ${{ github.workspace }}/artifact/
-        if-no-files-found: error      
+      if: ${{ github.ref == 'refs/heads/master' }}
+      run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/ --version-suffix ${{ vars.GITHUB_SHA }}  
     - name: Push
-      if: ${{ github.ref == 'refs/heads/release' }}
+      if: ${{ github.ref == 'refs/heads/master' }}
       run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
