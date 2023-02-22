@@ -23,7 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create GitHub Release
-        run: "gh release create 'Release ${{ inputs.versionName }}' --generate-notes"
+        run: "gh release create 'Release-${{ inputs.versionName }}' --generate-notes"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}          
         
