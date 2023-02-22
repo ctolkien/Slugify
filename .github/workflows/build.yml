@@ -22,7 +22,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal --logger GitHubActions
     - name: Pack
       if: ${{ github.ref == 'refs/heads/master' }}
       run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/ --version-suffix ${{ github.sha }}  
