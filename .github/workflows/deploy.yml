@@ -19,7 +19,7 @@ jobs:
       - name: Pack
         run: dotnet pack --configuration release --output ${{ github.workspace}}/output/
       - name: Push
-        run: dotnet nuget push ${{ github.workspace}}/output/*.nupkg --api-key ${{ secrets.NuGetToken }} --skip-duplicate
+        run: dotnet nuget push ${{ github.workspace}}/output/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NuGetToken }} --skip-duplicate
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create GitHub Release
