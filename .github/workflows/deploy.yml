@@ -3,6 +3,9 @@ name: 'NuGet Deployment'
 on:
   workflow_call:
   workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'Version name'
     
 jobs:
   deployment:
@@ -20,7 +23,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create GitHub Release
-        run: "gh release create 'Release Test' --generate-notes"
+        run: "gh release create 'Release ${{ inputs.versionName }}' --generate-notes"
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}          
         
