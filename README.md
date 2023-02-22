@@ -88,7 +88,7 @@ config.CollapseWhiteSpace = true;
 // Remove everything that's not a letter, number, hyphen, dot, or underscore
 config.DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]";
 
-// No Character limit to the slug lenght
+// No Character limit to the slug length
 config.MaxLength = null;
 
 // Create a helper instance with our new configuration
