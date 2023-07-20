@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
 
-    <VersionPrefix>4.0.1</VersionPrefix>
+    <VersionPrefix>4.0.2</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Slugify.Core</AssemblyName>
     <PackageId>Slugify.Core</PackageId>
