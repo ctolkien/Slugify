@@ -46,5 +46,14 @@ namespace Slugify.Core.Benchmarks
                 new SlugHelper().GenerateSlug(_textList[i]);
             }
         }
+
+        [Benchmark]
+        public void NonAscii()
+        {
+            for (var i = 0; i < _textList.Count; i++)
+            {
+                new SlugHelperForNonAsciiLanguages().GenerateSlug(_textList[i]);
+            }
+        }
     }
 }

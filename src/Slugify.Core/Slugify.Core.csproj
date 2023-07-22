@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
 
-    <VersionPrefix>4.0.2</VersionPrefix>
+    <VersionPrefix>5.0.0</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Slugify.Core</AssemblyName>
     <PackageId>Slugify.Core</PackageId>
@@ -36,7 +36,7 @@ With default settings, you will get an hyphenized, lowercase, alphanumeric versi
   </PropertyGroup>
 
   <!-- Deterministic builds -->
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
