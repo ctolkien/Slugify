@@ -7,7 +7,7 @@
     <AssemblyName>Slugify.Core</AssemblyName>
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
-    <PackageReleaseNotes>4.1.0 - Added support for Non-Ascii languages for SlugHelperForNonAsciiLanguades
+    <PackageReleaseNotes>5.0.0 - Added support for Non-Ascii languages for SlugHelperForNonAsciiLanguades
 4.0.0 - Bug fix relase from 3.0.0
 3.0.0 - Much improved performance and memory usage. Config file renamed. Potentially some breaking changes but none we're aware of
 2.4.0 - NetStandard 2.0 support only
