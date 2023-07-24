@@ -1,0 +1,85 @@
+name: Slugify Actions
+
+
+env:
+  PATH_TO_CSPROJ: 'src/Slugify.Core/Slugify.Core.csproj'
+
+on:
+  push: 
+    branches:
+      - main
+  pull_request:
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        type: environment
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --logger GitHubActions
+    - name: Pack #If we're not in production, add a version suffix to the package. This indicates pre-release
+      if: inputs.environment != 'Production'
+      run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/ /p:VersionSuffix=prerelease.${{ github.run_number}}
+    - name: Pack
+      if: inputs.environment == 'Production'
+      run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: uploads
+        path: ${{ github.workspace}}/artifact/
+        if-no-files-found: error
+    - name: Push to GitHub Package Registry
+      run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${{secrets.GITHUB_TOKEN}} --skip-duplicate
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    name: Deploy
+    environment: ${{ inputs.environment }}
+    if: (inputs.environment == 'Production') || (inputs.environment == 'PreRelease')
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/download-artifact@v3
+      with:
+        name: uploads
+        path: ${{ github.workspace}}/artifact/
+    - name: Push to NuGet Package Registry
+      run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --api-key ${{ secrets.NUGET_APIKEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+
+    - name: Extract version
+      shell: pwsh
+      run: |
+        $version = ([xml](Get-Content ${{ env.PATH_TO_CSPROJ }})).Project.PropertyGroup.VersionPrefix[0].Trim()
+        Add-Content -Path $env:GITHUB_ENV -Value "VERSION=$version"
+        Add-Content -Path $env:GITHUB_ENV -Value "VERSIONWITHSUFFIX=$version-${{ github.run_number }}"
+      
+    - name: Create GitHub Release
+      if:  inputs.environment == 'PreRelease'
+      run: gh release create "${{ env.VERSIONWITHSUFFIX }}" --generate-notes --prerelease
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Create GitHub Release
+      if:  inputs.environment == 'Production'
+      run: gh release create "${{ env.VERSION }}" --generate-notes
+      env:
+        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+
