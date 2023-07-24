@@ -6,7 +6,7 @@ namespace Slugify.Core
     //Note: Lifted from: https://github.com/polischuk/SlugGenerator
     internal static class UnicodeDecoderCharacterMap
     {
-        internal static Dictionary<int, string[]> Characters { get; }
+        internal static IReadOnlyDictionary<int, string[]> Characters { get; }
         static UnicodeDecoderCharacterMap()
         {
             Characters = new Dictionary<int, string[]> {
