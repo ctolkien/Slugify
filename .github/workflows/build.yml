@@ -24,10 +24,10 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal --logger GitHubActions
     - name: Pack
-      if: ${{ github.ref == 'refs/heads/master' }}
-      run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/ --version-suffix ${{ github.sha }}  
+      if: ${{ github.ref == 'refs/heads/main' }}
+      run: dotnet pack --configuration release --output ${{ github.workspace}}/artifact/ --version-suffix ${{ github.run_id }}  
     - name: Push
-      if: ${{ github.ref == 'refs/heads/master' }}
+      if: ${{ github.ref == 'refs/heads/main' }}
       run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${GITHUB_TOKEN} --skip-duplicate
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
