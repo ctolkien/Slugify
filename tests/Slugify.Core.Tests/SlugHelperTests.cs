@@ -7,7 +7,9 @@ namespace Slugify.Tests
     public class SlugHelperTest
     {
         private static ISlugHelper Create() => Create(new SlugHelperConfiguration());
+        private static ISlugHelper CreateNonAscii() => CreateNonAscii(new SlugHelperConfiguration());
         private static ISlugHelper Create(SlugHelperConfiguration config) => new SlugHelper(config);
+        private static ISlugHelper CreateNonAscii(SlugHelperConfiguration config) => new SlugHelperForNonAsciiLanguages(config);
 
         [Fact]
         public void TestEmptyConfig()
@@ -467,7 +469,8 @@ namespace Slugify.Tests
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
 
-        [Fact(Skip = "Is this actually a bug?")]
+
+        [Fact(Skip = "Our system is not culture aware")]
         public void TurkishEncodingOfI()
         {
             //Set culture to Turkish
@@ -479,6 +482,28 @@ namespace Slugify.Tests
 
             Assert.Equal(expected, helper.GenerateSlug(original));
 
+        }
+
+        [Fact]
+        public void Arabic()
+        {
+            const string original = "نوشتار فارسی";
+            const string expected = "nwshtr-frsy";
+
+            var helper = CreateNonAscii();
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+
+        [Fact]
+        public void Cyrillic()
+        {
+            const string original = "Наизусть";
+            const string expected = "naizust";
+
+            var helper = CreateNonAscii();
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
         }
     }
 }

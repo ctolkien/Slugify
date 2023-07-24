@@ -8101,7 +8101,8 @@ RSS: The Original Federated Social Network Protocol
 Creating a Pencil Effect in SVG
 grocy - ERP beyond your fridge
 Lattices: New Cryptographic Capabilities | Simons Institute for the Theory of Computing
-Build This 8-Bit Home Computer With Just 5 Chips  - IEEE Spectrum
+Build This 8-Bit Home Computer With Just 5 Chips
+ - IEEE Spectrum
 Social media at Schwab
 AVICII ZombieNation
 Major data breach exposes database of 200 million users

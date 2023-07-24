@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Slugify.Core.Benchmarks.SlugifyBenchmarks-20230222-214936</title>
+<title>Slugify.Core.Benchmarks.SlugifyBenchmarks-20230724-100639</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,19 +13,24 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet=v0.13.5, OS=Windows 11 (10.0.22621.1265/22H2/2022Update/SunValley2)
+BenchmarkDotNet v0.13.6, Windows 11 (10.0.22621.1992/22H2/2022Update/SunValley2)
 Intel Core i9-9900K CPU 3.60GHz (Coffee Lake), 1 CPU, 16 logical and 8 physical cores
-.NET SDK=7.0.200
-  [Host]     : .NET 6.0.14 (6.0.1423.7309), X64 RyuJIT AVX2
-  DefaultJob : .NET 6.0.14 (6.0.1423.7309), X64 RyuJIT AVX2
+.NET SDK 8.0.100-preview.6.23330.14
+  [Host]   : .NET 6.0.20 (6.0.2023.32017), X64 RyuJIT AVX2
+  ShortRun : .NET 6.0.20 (6.0.2023.32017), X64 RyuJIT AVX2
 </code></pre>
-<pre><code></code></pre>
+<pre><code>Job=ShortRun  IterationCount=3  LaunchCount=1  
+WarmupCount=3  
+</code></pre>
 
 <table>
-<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>   Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>Baseline</td><td>28.87 ms</td><td>0.441 ms</td><td>0.412 ms</td><td>1.00</td><td>2718.7500</td><td>21.8 MB</td><td>1.00</td>
-</tr><tr><td>Improved</td><td>23.64 ms</td><td>0.206 ms</td><td>0.193 ms</td><td>0.82</td><td>593.7500</td><td>4.85 MB</td><td>0.22</td>
+</thead><tbody><tr><td>Baseline</td><td>32.09 ms</td><td>15.438 ms</td><td>0.846 ms</td><td>1.00</td><td>0.00</td><td>2687.5000</td><td>21.8 MB</td><td>1.00</td>
+</tr><tr><td>Improved</td><td>24.13 ms</td><td>7.909 ms</td><td>0.433 ms</td><td>0.75</td><td>0.03</td><td>593.7500</td><td>4.85 MB</td><td>0.22</td>
+</tr><tr><td>ImprovedReusing</td><td>23.99 ms</td><td>10.798 ms</td><td>0.592 ms</td><td>0.75</td><td>0.03</td><td>562.5000</td><td>4.64 MB</td><td>0.21</td>
+</tr><tr><td>NonAscii</td><td>26.22 ms</td><td>16.970 ms</td><td>0.930 ms</td><td>0.82</td><td>0.01</td><td>718.7500</td><td>5.85 MB</td><td>0.27</td>
+</tr><tr><td>NonAsciiReusing</td><td>26.24 ms</td><td>2.172 ms</td><td>0.119 ms</td><td>0.82</td><td>0.02</td><td>687.5000</td><td>5.64 MB</td><td>0.26</td>
 </tr></tbody></table>
 </body>
 </html>

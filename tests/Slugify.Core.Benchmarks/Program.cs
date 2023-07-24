@@ -14,6 +14,7 @@ namespace Slugify.Core.Benchmarks
         }
     }
 
+    [ShortRunJob]
     [MemoryDiagnoser]
     public class SlugifyBenchmarks
     {
@@ -44,6 +45,35 @@ namespace Slugify.Core.Benchmarks
             for (var i = 0; i < _textList.Count; i++)
             {
                 new SlugHelper().GenerateSlug(_textList[i]);
+            }
+        }
+
+        [Benchmark]
+        public void ImprovedReusing()
+        {
+            var helper = new SlugHelper();
+            for (var i = 0; i < _textList.Count; i++)
+            {
+                helper.GenerateSlug(_textList[i]);
+            }
+        }
+
+        [Benchmark]
+        public void NonAscii()
+        {
+            for (var i = 0; i < _textList.Count; i++)
+            {
+                new SlugHelperForNonAsciiLanguages().GenerateSlug(_textList[i]);
+            }
+        }
+
+        [Benchmark]
+        public void NonAsciiReusing()
+        {
+            var helper = new SlugHelperForNonAsciiLanguages();
+            for (var i = 0; i < _textList.Count; i++)
+            {
+                helper.GenerateSlug(_textList[i]);
             }
         }
     }

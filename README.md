@@ -59,6 +59,12 @@ public class MyApp
 }
 ```
 
+Supporting Non-ASCII Characters
+-------------------------------
+
+If you want to support non-ASCII characters, you can use the `SlugHelperForNonAsciiLanguages` class instead of `SlugHelper`. This is a derived class which will translate the characters provided into something "equivalent" in ASCII. 
+
+
 Configuration
 -------------
 

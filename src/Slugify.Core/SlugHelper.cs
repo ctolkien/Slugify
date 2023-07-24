@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Slugify
 {
+
     public class SlugHelper : ISlugHelper
     {
         private static readonly Dictionary<string, Regex> _deleteRegexMap = new Dictionary<string, Regex>();
@@ -23,7 +24,7 @@ namespace Slugify
         /// <summary>
         /// Implements <see cref="ISlugHelper.GenerateSlug(string)"/>
         /// </summary>
-        public string GenerateSlug(string inputString)
+        public virtual string GenerateSlug(string inputString)
         {
             var sb = new StringBuilder();
 
