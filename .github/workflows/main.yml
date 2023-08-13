@@ -47,6 +47,7 @@ jobs:
         path: ${{ github.workspace}}/artifact/
         if-no-files-found: error
     - name: Push to GitHub Package Registry
+      if: ${{ github.ref == 'refs/heads/main' }}
       run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --source https://nuget.pkg.github.com/ctolkien/index.json --api-key ${{secrets.GITHUB_TOKEN}} --skip-duplicate
 
   deploy:
