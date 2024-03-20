@@ -472,7 +472,9 @@ public class SlugHelperTest
     }
 
 
+#pragma warning disable xUnit1004 // Test methods should not be skipped
     [Fact(Skip = "We are not culture aware and do not support this.")]
+#pragma warning restore xUnit1004 // Test methods should not be skipped
     public void TurkishEncodingOfI()
     {
         //Set culture to Turkish
