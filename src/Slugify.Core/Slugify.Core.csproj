@@ -4,6 +4,8 @@
 
     <VersionPrefix>5.0.0</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
+	<LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
     <AssemblyName>Slugify.Core</AssemblyName>
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
