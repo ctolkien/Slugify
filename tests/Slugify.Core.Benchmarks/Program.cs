@@ -18,56 +18,52 @@ internal class Program
 public class SlugifyBenchmarks
 {
     private List<string> _textList;
+    private SlugHelper _slugHelper;
+    private RevisedSlugHelper _improvedSlugHelper;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         _textList = [.. File.ReadAllLines("gistfile.txt")];
+        _slugHelper = new SlugHelper();
+        _improvedSlugHelper = new RevisedSlugHelper();
+
     }
 
     [Benchmark(Baseline = true)]
     public void Baseline()
     {
+        var sluggy = new SlugHelper(new SlugHelperConfiguration
+        {
+            // to enable legacy behaviour, for fairness
+            DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
+        });
         for (var i = 0; i < _textList.Count; i++)
         {
-            new SlugHelper(new SlugHelperConfiguration
-            {
-                // to enable legacy behaviour, for fairness
-                DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
-            }).GenerateSlug(_textList[i]);
+            sluggy.GenerateSlug(_textList[i]);
         }
     }
 
     [Benchmark]
-    public void Improved()
+    public void DWengier()
     {
         for (var i = 0; i < _textList.Count; i++)
         {
-            new SlugHelper().GenerateSlug(_textList[i]);
+            _slugHelper.GenerateSlug(_textList[i]);
         }
     }
 
     [Benchmark]
-    public void ImprovedReusing()
+    public void Copilot()
     {
-        var helper = new SlugHelper();
         for (var i = 0; i < _textList.Count; i++)
         {
-            helper.GenerateSlug(_textList[i]);
+            _improvedSlugHelper.GenerateSlug(_textList[i]);
         }
     }
 
     [Benchmark]
     public void NonAscii()
-    {
-        for (var i = 0; i < _textList.Count; i++)
-        {
-            new SlugHelperForNonAsciiLanguages().GenerateSlug(_textList[i]);
-        }
-    }
-
-    [Benchmark]
-    public void NonAsciiReusing()
     {
         var helper = new SlugHelperForNonAsciiLanguages();
         for (var i = 0; i < _textList.Count; i++)

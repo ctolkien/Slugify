@@ -9,12 +9,12 @@ namespace Slugify;
 
 public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
 {
-    private static readonly Dictionary<string, Regex> _deleteRegexMap = [];
-    private static readonly Lazy<SlugHelperConfiguration> _defaultConfig = new(() => new SlugHelperConfiguration());
+    protected static readonly Dictionary<string, Regex> _deleteRegexMap = [];
+    protected static readonly SlugHelperConfiguration _defaultConfig = new();
 
-    protected SlugHelperConfiguration Config { get; set; } = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
+    public SlugHelperConfiguration Config { get; set; } = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
 
-    public SlugHelper() : this(_defaultConfig.Value) { }
+    public SlugHelper() : this(_defaultConfig) { }
 
     /// <summary>
     /// Implements <see cref="ISlugHelper.GenerateSlug(string)"/>

@@ -35,7 +35,6 @@ With default settings, you will get an hyphenized, lowercase, alphanumeric versi
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
-
   </PropertyGroup>
 
   <!-- Deterministic builds -->

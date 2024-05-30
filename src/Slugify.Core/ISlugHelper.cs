@@ -2,6 +2,8 @@
 
 public interface ISlugHelper
 {
+    SlugHelperConfiguration Config { get; set; }
+
     /// <summary>
     /// Generates a slug from the provided <paramref name="inputString"/>
     /// </summary>

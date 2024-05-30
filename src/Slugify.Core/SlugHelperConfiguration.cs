@@ -41,13 +41,9 @@ public class SlugHelperConfiguration
     /// </summary>
     public string? DeniedCharactersRegex { get; set; }
 
-    public HashSet<char> AllowedChars
-    {
-        get
-        {
-            return DeniedCharactersRegex == null ? _allowedChars : throw new InvalidOperationException("After setting DeniedCharactersRegex the AllowedChars feature cannot be used.");
-        }
-    }
+    public HashSet<char> AllowedChars =>
+        DeniedCharactersRegex == null ? 
+        _allowedChars : throw new InvalidOperationException("After setting DeniedCharactersRegex the AllowedChars feature cannot be used.");
 
     /// <summary>
     /// Option to collapse multiple dashes into a single dash. Defaults to true.
