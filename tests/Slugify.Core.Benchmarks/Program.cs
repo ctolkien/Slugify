@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Running;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace Slugify.Core.Benchmarks;
 
@@ -15,18 +16,16 @@ internal class Program
 
 [ShortRunJob]
 [MemoryDiagnoser]
-public class SlugifyBenchmarks
+public partial class SlugifyBenchmarks
 {
     private List<string> _textList;
     private SlugHelper _slugHelper;
-    private RevisedSlugHelper _improvedSlugHelper;
 
     [GlobalSetup]
     public void GlobalSetup()
     {
         _textList = [.. File.ReadAllLines("gistfile.txt")];
         _slugHelper = new SlugHelper();
-        _improvedSlugHelper = new RevisedSlugHelper();
 
     }
 
@@ -35,8 +34,8 @@ public class SlugifyBenchmarks
     {
         var sluggy = new SlugHelper(new SlugHelperConfiguration
         {
-            // to enable legacy behaviour, for fairness
-            DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
+			// to enable legacy behaviour, for fairness
+			DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
         });
         for (var i = 0; i < _textList.Count; i++)
         {
@@ -44,8 +43,22 @@ public class SlugifyBenchmarks
         }
     }
 
-    [Benchmark]
-    public void DWengier()
+	[Benchmark]
+	public void BaselineBetterRegex()
+	{
+		var sluggy = new SlugHelper(new SlugHelperConfiguration
+		{
+			// to enable legacy behaviour, for fairness
+			DeniedCharactersRegex = GeneratedRegex()
+		});
+		for (var i = 0; i < _textList.Count; i++)
+		{
+			sluggy.GenerateSlug(_textList[i]);
+		}
+	}
+
+	[Benchmark]
+    public void Standard()
     {
         for (var i = 0; i < _textList.Count; i++)
         {
@@ -53,14 +66,7 @@ public class SlugifyBenchmarks
         }
     }
 
-    [Benchmark]
-    public void Copilot()
-    {
-        for (var i = 0; i < _textList.Count; i++)
-        {
-            _improvedSlugHelper.GenerateSlug(_textList[i]);
-        }
-    }
+    
 
     [Benchmark]
     public void NonAscii()
@@ -71,4 +77,7 @@ public class SlugifyBenchmarks
             helper.GenerateSlug(_textList[i]);
         }
     }
+
+	[GeneratedRegex(@"[^a-z0-9\-\._]")]
+	private static partial Regex GeneratedRegex();
 }

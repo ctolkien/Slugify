@@ -8,7 +8,6 @@ public class SlugHelperTest
 {
 #pragma warning disable CA1859 // Use concrete types when possible for improved performance
     private static ISlugHelper Create() => Create(new SlugHelperConfiguration());
-    private static ISlugHelper CreateImproved() => new RevisedSlugHelper();
     private static ISlugHelper CreateNonAscii() => CreateNonAscii(new SlugHelperConfiguration());
     private static ISlugHelper Create(SlugHelperConfiguration config) => new SlugHelper(config);
     private static ISlugHelper CreateNonAscii(SlugHelperConfiguration config) => new SlugHelperForNonAsciiLanguages(config);
@@ -30,7 +29,7 @@ public class SlugHelperTest
     {
         var config = new SlugHelperConfiguration
         {
-            DeniedCharactersRegex = ""
+            DeniedCharactersRegex = new System.Text.RegularExpressions.Regex(string.Empty)
         };
 
         Assert.Throws<InvalidOperationException>(() => config.AllowedChars);
@@ -60,8 +59,7 @@ public class SlugHelperTest
 
     public static TheoryData<ISlugHelper> GenerateStandardSluggers => new()
     {
-        { Create() },
-        { CreateImproved() },
+        { Create() }
     };
     
     [Theory]
@@ -144,7 +142,7 @@ public class SlugHelperTest
 
         helper.Config = new SlugHelperConfiguration
         {
-            DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
         };
 
         Assert.Equal(expected, helper.GenerateSlug(original));
@@ -160,7 +158,7 @@ public class SlugHelperTest
 
         helper.Config = new SlugHelperConfiguration
         {
-            DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
+			DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
         };
 
         Assert.Equal(expected, helper.GenerateSlug(original));

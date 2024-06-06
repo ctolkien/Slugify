@@ -1,209 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Slugify;
 
-
 public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
 {
-    protected static readonly Dictionary<string, Regex> _deleteRegexMap = [];
     protected static readonly SlugHelperConfiguration _defaultConfig = new();
-
+    protected static readonly Dictionary<string, Regex> _deleteRegexMap = [];
     public SlugHelperConfiguration Config { get; set; } = config ?? throw new ArgumentNullException(nameof(config), "can't be null use default config or empty constructor.");
 
     public SlugHelper() : this(_defaultConfig) { }
 
-    /// <summary>
-    /// Implements <see cref="ISlugHelper.GenerateSlug(string)"/>
-    /// </summary>
     public virtual string GenerateSlug(string inputString)
     {
-        var sb = new StringBuilder();
+        var normalizedInput = inputString.Normalize(NormalizationForm.FormD);
 
-        // First we trim and lowercase if necessary
-        PrepareStringBuilder(inputString.Normalize(NormalizationForm.FormD), sb);
-        ApplyStringReplacements(sb);
-        RemoveNonSpacingMarks(sb);
+        normalizedInput = Config.TrimWhitespace ? normalizedInput.Trim() : normalizedInput;
+        normalizedInput = Config.ForceLowerCase ? normalizedInput.ToLower() : normalizedInput;
 
-        if (Config.DeniedCharactersRegex == null)
-        {
-            RemoveNotAllowedCharacters(sb);
-        }
+        var sb = new StringBuilder(normalizedInput);
 
-        // For backwards compatibility
-        if (Config.DeniedCharactersRegex != null)
-        {
-            if (!_deleteRegexMap.TryGetValue(Config.DeniedCharactersRegex, out var deniedCharactersRegex))
-            {
-                deniedCharactersRegex = new Regex(Config.DeniedCharactersRegex, RegexOptions.Compiled);
-                _deleteRegexMap.Add(Config.DeniedCharactersRegex, deniedCharactersRegex);
-            }
-
-            var currentValue = sb.ToString();
-            sb.Clear();
-            sb.Append(DeleteCharacters(currentValue, deniedCharactersRegex));
-        }
-
-        if (Config.CollapseDashes)
-        {
-            CollapseDashes(sb);
-        }
-
-        return sb.ToString();
-    }
-
-    private void PrepareStringBuilder(string inputString, StringBuilder sb)
-    {
-        var seenFirstNonWhitespace = false;
-        var indexOfLastNonWhitespace = 0;
-        for (var i = 0; i < inputString.Length; i++)
-        {
-            // first, clean whitepace
-            var c = inputString[i];
-            var isWhitespace = char.IsWhiteSpace(c);
-            if (!seenFirstNonWhitespace && isWhitespace)
-            {
-                if (Config.TrimWhitespace)
-                {
-                    continue;
-                }
-                else
-                {
-                    sb.Append(c);
-                }
-            }
-            else
-            {
-                seenFirstNonWhitespace = true;
-                if (!isWhitespace)
-                {
-                    indexOfLastNonWhitespace = sb.Length;
-                }
-                else
-                {
-                    c = ' ';
-
-                    if (Config.CollapseWhiteSpace)
-                    {
-                        while ((i + 1) < inputString.Length && char.IsWhiteSpace(inputString[i + 1]))
-                        {
-                            i++;
-                        }
-                    }
-                }
-                if (Config.ForceLowerCase)
-                {
-                    c = char.ToLower(c);
-                }
-
-                sb.Append(c);
-            }
-        }
-
-        if (Config.TrimWhitespace)
-        {
-            sb.Length = indexOfLastNonWhitespace + 1;
-        }
-    }
-
-    private void ApplyStringReplacements(StringBuilder sb)
-    {
         foreach (var replacement in Config.StringReplacements)
         {
             var search = replacement.Key.Normalize(NormalizationForm.FormD);
             var replace = replacement.Value.Normalize(NormalizationForm.FormD);
 
-            for (var i = 0; i < sb.Length; i++)
+            sb.Replace(search, replace);
+        }
+
+        if (Config.DeniedCharactersRegex == null)
+        {
+            var allowedChars = Config.AllowedChars;
+            for (int i = 0; i < sb.Length;)
             {
-                if (SubstringEquals(sb, i, search))
+                if (!allowedChars.Contains(sb[i]))
                 {
-                    sb.Remove(i, search.Length);
-                    sb.Insert(i, replace);
-
-                    i += replace.Length - 1;
-                }
-            }
-        }
-    }
-
-    private static bool SubstringEquals(StringBuilder sb, int index, string toMatch)
-    {
-        if (sb.Length - index < toMatch.Length)
-        {
-            return false;
-        }
-
-        for (var i = index; i < sb.Length; i++)
-        {
-            var matchIndex = i - index;
-
-            if (matchIndex == toMatch.Length)
-            {
-                return true;
-            }
-            else if (sb[i] != toMatch[matchIndex])
-            {
-                return false;
-            }
-        }
-        return (sb.Length - index) == toMatch.Length;
-    }
-
-    // Thanks http://stackoverflow.com/a/249126!
-    protected static void RemoveNonSpacingMarks(StringBuilder sb)
-    {
-        for (var ich = 0; ich < sb.Length; ich++)
-        {
-            if (CharUnicodeInfo.GetUnicodeCategory(sb[ich]) == UnicodeCategory.NonSpacingMark)
-            {
-                sb.Remove(ich, 1);
-                ich--;
-            }
-        }
-    }
-
-    protected void RemoveNotAllowedCharacters(StringBuilder sb)
-    {
-        // perf!
-        var allowedChars = Config.AllowedChars;
-        for (var i = 0; i < sb.Length; i++)
-        {
-            if (!allowedChars.Contains(sb[i]))
-            {
-                sb.Remove(i, 1);
-                i--;
-            }
-        }
-    }
-
-    protected static void CollapseDashes(StringBuilder sb)
-    {
-        var firstDash = true;
-        for (var i = 0; i < sb.Length; i++)
-        {
-            // first, clean whitepace
-            if (sb[i] == '-')
-            {
-                if (firstDash)
-                {
-                    firstDash = false;
+                    sb.Remove(i, 1);
                 }
                 else
                 {
-                    sb.Remove(i, 1);
-                    i--;
+                    i++;
                 }
             }
-            else
+        }
+        else // Back compat regex
+        {
+            var currentValue = sb.ToString();
+            sb.Clear();
+            sb.Insert(0, Config.DeniedCharactersRegex.Replace(currentValue, string.Empty));
+        }
+
+        if (Config.CollapseDashes)
+        {
+            for (int i = 0; i < sb.Length - 1;)
             {
-                firstDash = true;
+                if (sb[i] == '-' && sb[i + 1] == '-')
+                {
+                    sb.Remove(i, 1);
+                }
+                else
+                {
+                    i++;
+                }
             }
         }
+        return sb.ToString();
     }
 
-    protected static string DeleteCharacters(string str, Regex deniedCharactersRegex) => deniedCharactersRegex.Replace(str, string.Empty);
 }
 

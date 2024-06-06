@@ -30,6 +30,19 @@ PM> Install-Package Slugify.Core
 
 Or running `dotnet add package Slugify.Core` from the command line.
 
+Upgrading from 3.x/4.x to 5.x
+-----------------------------
+
+* 5.0 is significantly faster and uses less memory again.
+* `DeniedCharactersRegex` is no longer a string, and it now takes in a `Regex` object. This will allow you to use Source Generated regexes on platforms that support them. Using something like:
+```csharp
+[GeneratedRegex(@"[^a-z0-9\-\._]")]
+private static partial Regex GeneratedRegex();
+```
+* Will get you slightly faster performance on platforms that support it. Howevier it will use a bit more memory.
+* The way tab and new-line characters are handled has been changed. They are no longer translated to `-` by default and will instead by stripped.
+
+
 Upgrading from 2.x to 3.x
 -------------------------
 

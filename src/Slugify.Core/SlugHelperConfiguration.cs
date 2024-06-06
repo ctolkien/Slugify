@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Slugify;
 
@@ -39,7 +40,7 @@ public class SlugHelperConfiguration
     /// Provide a custom regex to match characters that should be removed from the slug.
     /// Note: Setting this property will stop the AllowedChars feature from being used.
     /// </summary>
-    public string? DeniedCharactersRegex { get; set; }
+    public Regex? DeniedCharactersRegex { get; set; }
 
     public HashSet<char> AllowedChars =>
         DeniedCharactersRegex == null ? 
@@ -54,5 +55,6 @@ public class SlugHelperConfiguration
     /// Option to trim leading and trailing whitespace. Defaults to true.
     /// </summary>
     public bool TrimWhitespace { get; set; } = true;
+
 }
 
