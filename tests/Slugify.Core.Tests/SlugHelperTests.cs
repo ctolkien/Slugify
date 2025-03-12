@@ -154,11 +154,26 @@ public class SlugHelperTest
     public void TestDeniedCharacterDeletionLegacy3(ISlugHelper helper)
     {
         const string original = "regular! !slug";
+        const string expected = "regular!-!slug";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._\!]")
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionLegacy4(ISlugHelper helper)
+    {
+        const string original = "regular! !slug";
         const string expected = "regular-slug";
 
         helper.Config = new SlugHelperConfiguration
         {
-            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._!]")
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
         };
 
         Assert.Equal(expected, helper.GenerateSlug(original));
