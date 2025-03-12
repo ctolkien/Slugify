@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Slugify.Core.Benchmarks.SlugifyBenchmarks-20240530-203144</title>
+<title>Slugify.Core.Benchmarks.SlugifyBenchmarks-20240821-105130</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -13,23 +13,24 @@
 </head>
 <body>
 <pre><code>
-BenchmarkDotNet v0.13.12, Windows 11 (10.0.22621.3672/22H2/2022Update/SunValley2)
+BenchmarkDotNet v0.13.12, Windows 11 (10.0.22631.4037/23H2/2023Update/SunValley3)
 Intel Core i9-9900K CPU 3.60GHz (Coffee Lake), 1 CPU, 16 logical and 8 physical cores
-.NET SDK 8.0.301
-  [Host]   : .NET 8.0.6 (8.0.624.26715), X64 RyuJIT AVX2
-  ShortRun : .NET 8.0.6 (8.0.624.26715), X64 RyuJIT AVX2
+.NET SDK 9.0.100-preview.7.24407.12
+  [Host]   : .NET 8.0.8 (8.0.824.36612), X64 RyuJIT AVX2
+  ShortRun : .NET 8.0.8 (8.0.824.36612), X64 RyuJIT AVX2
 </code></pre>
 <pre><code>Job=ShortRun  IterationCount=3  LaunchCount=1  
 WarmupCount=3  
 </code></pre>
 
 <table>
-<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Allocated</th><th>Alloc Ratio</th>
+<thead><tr><th>Method       </th><th>Mean</th><th>Error</th><th>StdDev</th><th>Ratio</th><th>RatioSD</th><th>Gen0</th><th>Gen1</th><th>Allocated</th><th>Alloc Ratio</th>
 </tr>
-</thead><tbody><tr><td>Baseline</td><td>14.994 ms</td><td>1.990 ms</td><td>0.1091 ms</td><td>1.00</td><td>0.00</td><td>953.1250</td><td>7.65 MB</td><td>1.00</td>
-</tr><tr><td>DWengier</td><td>17.520 ms</td><td>5.280 ms</td><td>0.2894 ms</td><td>1.17</td><td>0.01</td><td>562.5000</td><td>4.64 MB</td><td>0.61</td>
-</tr><tr><td>Copilot</td><td>7.760 ms</td><td>2.762 ms</td><td>0.1514 ms</td><td>0.52</td><td>0.01</td><td>460.9375</td><td>3.7 MB</td><td>0.48</td>
-</tr><tr><td>NonAscii</td><td>18.341 ms</td><td>6.463 ms</td><td>0.3543 ms</td><td>1.22</td><td>0.02</td><td>687.5000</td><td>5.64 MB</td><td>0.74</td>
+</thead><tbody><tr><td>Baseline</td><td>7.227 ms</td><td>1.5496 ms</td><td>0.0849 ms</td><td>1.00</td><td>0.00</td><td>687.5000</td><td>7.8125</td><td>5.51 MB</td><td>1.00</td>
+</tr><tr><td>OldVersion</td><td>17.346 ms</td><td>0.7337 ms</td><td>0.0402 ms</td><td>2.40</td><td>0.03</td><td>562.5000</td><td>-</td><td>4.64 MB</td><td>0.84</td>
+</tr><tr><td>BaselineBetterRegex</td><td>6.402 ms</td><td>3.8224 ms</td><td>0.2095 ms</td><td>0.89</td><td>0.04</td><td>687.5000</td><td>-</td><td>5.51 MB</td><td>1.00</td>
+</tr><tr><td>Standard</td><td>7.735 ms</td><td>1.1115 ms</td><td>0.0609 ms</td><td>1.07</td><td>0.02</td><td>453.1250</td><td>-</td><td>3.7 MB</td><td>0.67</td>
+</tr><tr><td>NonAscii</td><td>8.024 ms</td><td>0.6855 ms</td><td>0.0376 ms</td><td>1.11</td><td>0.01</td><td>578.1250</td><td>-</td><td>4.7 MB</td><td>0.85</td>
 </tr></tbody></table>
 </body>
 </html>
