@@ -32,7 +32,7 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
 
         if (Config.DeniedCharactersRegex == null)
         {
-            var allowedChars = Config.AllowedChars;
+            var allowedChars = Config.AllowedCharacters;
             for (int i = 0; i < sb.Length;)
             {
                 if (!allowedChars.Contains(sb[i]))
@@ -66,6 +66,7 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
                 }
             }
         }
+
         return sb.ToString();
     }
 

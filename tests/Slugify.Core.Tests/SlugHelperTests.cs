@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Globalization;
+
 using Xunit;
 
 namespace Slugify.Tests;
 
 public class SlugHelperTest
 {
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
     private static ISlugHelper Create() => Create(new SlugHelperConfiguration());
     private static ISlugHelper CreateNonAscii() => CreateNonAscii(new SlugHelperConfiguration());
     private static ISlugHelper Create(SlugHelperConfiguration config) => new SlugHelper(config);
     private static ISlugHelper CreateNonAscii(SlugHelperConfiguration config) => new SlugHelperForNonAsciiLanguages(config);
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
     [Fact]
     public void TestEmptyConfig()
     {
         var config = new SlugHelperConfiguration();
         Assert.True(config.ForceLowerCase);
-        Assert.True(config.CollapseWhiteSpace);
+
         Assert.Single(config.StringReplacements);
         Assert.Null(config.DeniedCharactersRegex);
-        Assert.NotEmpty(config.AllowedChars);
+        Assert.NotEmpty(config.AllowedCharacters);
     }
 
     [Fact]
@@ -32,7 +31,7 @@ public class SlugHelperTest
             DeniedCharactersRegex = new System.Text.RegularExpressions.Regex(string.Empty)
         };
 
-        Assert.Throws<InvalidOperationException>(() => config.AllowedChars);
+        Assert.Throws<InvalidOperationException>(() => config.AllowedCharacters);
     }
 
     [Fact]
@@ -61,7 +60,7 @@ public class SlugHelperTest
     {
         { Create() }
     };
-    
+
     [Theory]
     [MemberData(nameof(GenerateStandardSluggers))]
     public void TestLowerCaseEnforcement(ISlugHelper helper)
@@ -80,19 +79,6 @@ public class SlugHelperTest
         const string expected = "a-b-c-d";
 
         helper.Config.CollapseDashes = true;
-
-        Assert.Equal(expected, helper.GenerateSlug(original));
-    }
-
-    [Theory]
-    [MemberData(nameof(GenerateStandardSluggers))]
-    public void TestWhiteSpaceNotCollapsing(ISlugHelper helper)
-    {
-        const string original = "a  b    \n  c   \t    d";
-        const string expected = "a--b-------c--------d";
-
-        helper.Config.CollapseDashes = false; 
-        helper.Config.CollapseWhiteSpace = false;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
@@ -125,8 +111,8 @@ public class SlugHelperTest
         const string expected = "b$";
 
         var config = new SlugHelperConfiguration();
-        config.AllowedChars.Remove('a');
-        config.AllowedChars.Add('$');
+        config.AllowedCharacters.Remove('a');
+        config.AllowedCharacters.Add('$');
         helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
@@ -148,17 +134,47 @@ public class SlugHelperTest
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionLegacy2(ISlugHelper helper)
+    {
+        const string original = "!#$%&/()=";
+        const string expected = "!";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            DeniedCharactersRegex = new(@"[^!]")
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionLegacy3(ISlugHelper helper)
+    {
+        const string original = "regular! !slug";
+        const string expected = "regular-slug";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._!]")
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
 
     [Theory]
     [MemberData(nameof(GenerateStandardSluggers))]
     public void TestDeniedCharacterDeletionLegacyKeepsAllowedCharacters(ISlugHelper helper)
     {
-        const string original = "Abc-123.$1$_x";
+        const string original = "Abc -123.$1$_x";
         const string expected = "abc-123.1_x";
 
         helper.Config = new SlugHelperConfiguration
         {
-			DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
         };
 
         Assert.Equal(expected, helper.GenerateSlug(original));
@@ -488,9 +504,7 @@ public class SlugHelperTest
     }
 
 
-#pragma warning disable xUnit1004 // Test methods should not be skipped
     [Fact(Skip = "We are not culture aware and do not support this.")]
-#pragma warning restore xUnit1004 // Test methods should not be skipped
     public void TurkishEncodingOfI()
     {
         //Set culture to Turkish

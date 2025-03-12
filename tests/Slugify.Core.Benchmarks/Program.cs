@@ -1,8 +1,9 @@
-﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 
 namespace Slugify.Core.Benchmarks;
 
@@ -34,8 +35,8 @@ public partial class SlugifyBenchmarks
     {
         var sluggy = new SlugHelper(new SlugHelperConfiguration
         {
-			// to enable legacy behaviour, for fairness
-			DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
+            // to enable legacy behaviour, for fairness
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
         });
         for (var i = 0; i < _textList.Count; i++)
         {
@@ -43,21 +44,31 @@ public partial class SlugifyBenchmarks
         }
     }
 
-	[Benchmark]
-	public void BaselineBetterRegex()
-	{
-		var sluggy = new SlugHelper(new SlugHelperConfiguration
-		{
-			// to enable legacy behaviour, for fairness
-			DeniedCharactersRegex = GeneratedRegex()
-		});
-		for (var i = 0; i < _textList.Count; i++)
-		{
-			sluggy.GenerateSlug(_textList[i]);
-		}
-	}
+    //[Benchmark]
+    //public void OldVersion()
+    //{
+    //	var sluggy = new SlugHelper();
+    //	for (var i = 0; i < _textList.Count; i++)
+    //	{
+    //		sluggy.GenerateSlugOld(_textList[i]);
+    //	}
+    //}
 
-	[Benchmark]
+    [Benchmark]
+    public void BaselineBetterRegex()
+    {
+        var sluggy = new SlugHelper(new SlugHelperConfiguration
+        {
+            // to enable legacy behaviour, for fairness
+            DeniedCharactersRegex = GeneratedRegex()
+        });
+        for (var i = 0; i < _textList.Count; i++)
+        {
+            sluggy.GenerateSlug(_textList[i]);
+        }
+    }
+
+    [Benchmark]
     public void Standard()
     {
         for (var i = 0; i < _textList.Count; i++)
@@ -66,7 +77,7 @@ public partial class SlugifyBenchmarks
         }
     }
 
-    
+
 
     [Benchmark]
     public void NonAscii()
@@ -78,6 +89,6 @@ public partial class SlugifyBenchmarks
         }
     }
 
-	[GeneratedRegex(@"[^a-z0-9\-\._]")]
-	private static partial Regex GeneratedRegex();
+    [GeneratedRegex(@"[^a-z0-9\-\._]")]
+    private static partial Regex GeneratedRegex();
 }
