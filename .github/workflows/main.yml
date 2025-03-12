@@ -1,5 +1,7 @@
 name: Slugify Actions
 
+permissions:
+  packages: write
 
 env:
   PATH_TO_CSPROJ: 'src/Slugify.Core/Slugify.Core.csproj'
