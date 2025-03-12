@@ -40,7 +40,7 @@ Upgrading from 4.x to 5.x
 private static partial Regex GeneratedRegex();
 ```
 * Using a generated regex version will be ever so slightly the fastest way of generating a slug on platforms that support it. However it will use a bit more memory.
-* The way tab and new-line characters are handled has been changed. They are no longer translated to `-` by default and will instead by stripped. This will only be a noticeable change if you have disabled `CollapseDashes` (which is not the default).
+* The way tab and new-line characters are handled has been changed. They are no longer translated to `-` by default and will instead be stripped. This will only be a noticeable change if you have disabled `CollapseDashes` (which is not the default).
 * The option to disable collapsing whitespace has been removed.
 * `AllowedChars` is renamed to `AllowedCharacters`.
 
