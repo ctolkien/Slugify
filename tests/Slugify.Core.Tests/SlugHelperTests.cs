@@ -784,4 +784,28 @@ public class SlugHelperTest
         });
         Assert.Equal(expected, helper.GenerateSlug(input));
     }
+
+    [Fact]
+    public void TestsInTheReadme()
+    {
+        const string original = "Simple,short&quick Example";
+        const string expected = "Simple-short-quick-Example";
+
+        // Creating a configuration object
+        var config = new SlugHelperConfiguration();
+
+        // Add individual replacement rules
+        config.StringReplacements.Add("&", "-");
+        config.StringReplacements.Add(",", "-");
+
+        // Keep the casing of the input string
+        config.ForceLowerCase = false;
+
+
+        var helper = Create(config);
+
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
 }
