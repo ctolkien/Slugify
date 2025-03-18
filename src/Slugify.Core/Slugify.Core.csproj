@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
 
@@ -7,9 +7,11 @@
 	<LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
     <AssemblyName>Slugify.Core</AssemblyName>
+	<AnalysisMode>All</AnalysisMode>
+	<NoWarn>IDE0130;SYSLIB1045</NoWarn>
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
-    <PackageReleaseNotes>5.0.0 - Added support for Non-Ascii languages for SlugHelperForNonAsciiLanguades
+    <PackageReleaseNotes>5.0.0 - Rewrite using newer language features. Added support for Non-Ascii languages for SlugHelperForNonAsciiLanguages
 4.0.0 - Bug fix relase from 3.0.0
 3.0.0 - Much improved performance and memory usage. Config file renamed. Potentially some breaking changes but none we're aware of
 2.4.0 - NetStandard 2.0 support only
@@ -35,7 +37,6 @@ With default settings, you will get an hyphenized, lowercase, alphanumeric versi
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
-
   </PropertyGroup>
 
   <!-- Deterministic builds -->
@@ -54,8 +55,8 @@ With default settings, you will get an hyphenized, lowercase, alphanumeric versi
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Memory" Version="4.6.0" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+    <PackageReference Include="System.Memory" Version="4.6.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.3" />
   </ItemGroup>
 
 

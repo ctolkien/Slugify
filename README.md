@@ -30,6 +30,21 @@ PM> Install-Package Slugify.Core
 
 Or running `dotnet add package Slugify.Core` from the command line.
 
+Upgrading from 4.x to 5.x
+-----------------------------
+
+* 5.0 is significantly faster and uses less memory. 2-3x faster than version 4 and allocates about 20% less memory.
+* `DeniedCharactersRegex` is no longer a string, and it now takes in a `Regex` object. This will allow you to use Source Generated regexes on platforms that support them. Using something like:
+```csharp
+[GeneratedRegex(@"[^a-z0-9\-\._]")]
+private static partial Regex GeneratedRegex();
+```
+* Using a generated regex version will be ever so slightly the fastest way of generating a slug on platforms that support it. However it will use a bit more memory.
+* The way tab and new-line characters are handled has been changed. They are no longer translated to `-` by default and will instead be stripped. This will only be a noticeable change if you have disabled `CollapseDashes` (which is not the default).
+* The option to disable collapsing whitespace has been removed.
+* `AllowedChars` is renamed to `AllowedCharacters`.
+
+
 Upgrading from 2.x to 3.x
 -------------------------
 
@@ -104,11 +119,6 @@ This specifies whether the output string should be converted to lower-case. If s
 
 -  Default value: `true`
 
-### `CollapseWhiteSpace`
-This specifies whether consecutive whitespace should be replaced by just one space (`" "`). The whitespace will be collapsed before any other character replacements are being made.
-
-- Default value: `true`
-
 ### `TrimWhitespace`
 This specifies whether leading and trailing whitespace should be removed from the input string. The whitespace will be trimmed before any other character replacements are being made.
 
@@ -148,7 +158,7 @@ String replacements are being made after whitespace has been trimmed and collaps
    config.StringReplacements.Add("ß", "ss");
    ```
 
-### `AllowedChars`
+### `AllowedCharacters`
 Set of characters that are allowed in the slug, which will be kept when the input string is being processed. By default, this contains all ASCII characters, the full stop, the dash and the underscore. This is the preferred way of controlling which characters should be replaced when generating the slug.
 
 Characters that are not allowed will be replaced after string replacements are completed.
@@ -162,16 +172,14 @@ Characters that are not allowed will be replaced after string replacements are c
    var config = new SlugHelperConfiguration();
 
    // add individual characters to the list of allowed characters
-   config.AllowedChars.Add('!');
+   config.AllowedCharacters.Add('!');
 
    // remove previously added or default characters
-   config.AllowedChars.Remove('.');
+   config.AllowedCharacters.Remove('.');
    ```
 
 ### `DeniedCharactersRegex`
 Alternative method of specifying which characters will be allowed in the slug, which will replace the functionality of the `AllowedChars` set. The value must be a valid regular expression that specifies which characters *are to be removed*. Every match of this regular expression in the input string will be removed. The removal happens after string replacements are completed.
-
-This functionality is kept in place for legacy compatibility reasons and since it relies on regular expressions, it will perform worse than using the `AllowedChars` way of specifying.
 
 Specifying the `DeniedCharactersRegex` option will disable the character removal behavior from the `AllowedChars` option.
 
@@ -183,21 +191,21 @@ Specifying the `DeniedCharactersRegex` option will disable the character removal
    var helper = new SlugHelper(new SlugHelperConfiguration
    {
        // this is equivalent to the default behavior from `AllowChars`
-       DeniedCharactersRegex = "[^a-zA-Z0-9._-]"
+       DeniedCharactersRegex = new(@"[^a-zA-Z0-9._-]")
    });
    Console.WriteLine(helper.GenerateSlug("OLA ke ase!")); // "ola-ke-ase"
 
    helper = new SlugHelper(new SlugHelperConfiguration
    {
        // remove certain characters explicitly
-       DeniedCharactersRegex = @"[abcdef]"
+       DeniedCharactersRegex = new(@"[abcdef]")
    });
    Console.WriteLine(helper.GenerateSlug("abcdefghijk")); // "ghijk"
 
    helper = new SlugHelper(new SlugHelperConfiguration
    {
        // remove more complex matches
-       DeniedCharactersRegex = @"foo|bar"
+       DeniedCharactersRegex = new(@"foo|bar")
    });
    Console.WriteLine(helper.GenerateSlug("this is an foo example")); // "this-is-an-example"
    ```

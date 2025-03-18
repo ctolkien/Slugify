@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8</TargetFramework>
     <IsPackable>false</IsPackable>
+	<NoWarn>SYSLIB1045</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

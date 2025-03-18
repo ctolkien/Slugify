@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Slugify;
 
@@ -10,12 +11,16 @@ public class SlugHelperConfiguration
 {
     // TODO: Implement a source generator so this can be done at compile time :)
     private static readonly char[] _allowedCharsArray =
-        ("abcdefghijklmnopqrstuvwxyz" +
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-        "0123456789" +
-        "-._").ToCharArray();
+        [
+            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+            'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            '-', '.', '_'
+        ];
 
-    private readonly HashSet<char> _allowedChars = new(_allowedCharsArray);
+    private readonly HashSet<char> _allowedChars = [.. _allowedCharsArray];
 
     /// <summary>
     /// Provides a way to replace strings with other strings before the slug is generated. By default, spaces are replaced with dashes.
@@ -31,23 +36,20 @@ public class SlugHelperConfiguration
     public bool ForceLowerCase { get; set; } = true;
 
     /// <summary>
-    /// Option to collapse whitespace. Defaults to true.
+    /// Provide a custom regex to match characters that should be removed from the slug.
+    /// Note: Setting this property will stop the AllowedChars feature from being used and it will use this regex instead.
+    /// A reasonable baseline would be `[^a-zA-Z0-9\-\._]` which allows letters, numbers, dashes, underscores, and periods
     /// </summary>
-    public bool CollapseWhiteSpace { get; set; } = true;
+    public Regex? DeniedCharactersRegex { get; set; }
 
     /// <summary>
-    /// Provide a custom regex to match characters that should be removed from the slug.
-    /// Note: Setting this property will stop the AllowedChars feature from being used.
+    /// This is a <c>HashSet</c> of characters that are allowed in the slug.
+    /// By default , it contains all letters, numbers, dashes, underscores, and periods.
+    /// You can add and remove to this collection to customize the allowed characters.
     /// </summary>
-    public string? DeniedCharactersRegex { get; set; }
-
-    public HashSet<char> AllowedChars
-    {
-        get
-        {
-            return DeniedCharactersRegex == null ? _allowedChars : throw new InvalidOperationException("After setting DeniedCharactersRegex the AllowedChars feature cannot be used.");
-        }
-    }
+    public HashSet<char> AllowedCharacters =>
+        DeniedCharactersRegex == null ?
+        _allowedChars : throw new InvalidOperationException("After setting DeniedCharactersRegex the AllowedChars feature cannot be used.");
 
     /// <summary>
     /// Option to collapse multiple dashes into a single dash. Defaults to true.
@@ -58,5 +60,6 @@ public class SlugHelperConfiguration
     /// Option to trim leading and trailing whitespace. Defaults to true.
     /// </summary>
     public bool TrimWhitespace { get; set; } = true;
+
 }
 

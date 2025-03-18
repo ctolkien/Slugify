@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Globalization;
+
 using Xunit;
 
 namespace Slugify.Tests;
 
 public class SlugHelperTest
 {
-#pragma warning disable CA1859 // Use concrete types when possible for improved performance
     private static ISlugHelper Create() => Create(new SlugHelperConfiguration());
     private static ISlugHelper CreateNonAscii() => CreateNonAscii(new SlugHelperConfiguration());
     private static ISlugHelper Create(SlugHelperConfiguration config) => new SlugHelper(config);
     private static ISlugHelper CreateNonAscii(SlugHelperConfiguration config) => new SlugHelperForNonAsciiLanguages(config);
-#pragma warning restore CA1859 // Use concrete types when possible for improved performance
 
     [Fact]
     public void TestEmptyConfig()
     {
         var config = new SlugHelperConfiguration();
         Assert.True(config.ForceLowerCase);
-        Assert.True(config.CollapseWhiteSpace);
+
         Assert.Single(config.StringReplacements);
         Assert.Null(config.DeniedCharactersRegex);
-        Assert.NotEmpty(config.AllowedChars);
+        Assert.NotEmpty(config.AllowedCharacters);
     }
 
     [Fact]
@@ -29,10 +28,10 @@ public class SlugHelperTest
     {
         var config = new SlugHelperConfiguration
         {
-            DeniedCharactersRegex = ""
+            DeniedCharactersRegex = new System.Text.RegularExpressions.Regex(string.Empty)
         };
 
-        Assert.Throws<InvalidOperationException>(() => config.AllowedChars);
+        Assert.Throws<InvalidOperationException>(() => config.AllowedCharacters);
     }
 
     [Fact]
@@ -57,114 +56,148 @@ public class SlugHelperTest
         Assert.Throws<ArgumentNullException>(() => Create(null));
     }
 
-    [Fact]
-    public void TestLowerCaseEnforcement()
+    public static TheoryData<ISlugHelper> GenerateStandardSluggers => new()
+    {
+        { Create() }
+    };
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestLowerCaseEnforcement(ISlugHelper helper)
     {
         const string original = "AbCdE";
         const string expected = "abcde";
 
-        var helper = Create();
-
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestWhiteSpaceCollapsing()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestWhiteSpaceCollapsing(ISlugHelper helper)
     {
         const string original = "a  b    \n  c   \t    d";
         const string expected = "a-b-c-d";
 
-        var helper = Create(new SlugHelperConfiguration
-        {
-            CollapseDashes = false
-        });
+        helper.Config.CollapseDashes = true;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestWhiteSpaceNotCollapsing()
-    {
-        const string original = "a  b    \n  c   \t    d";
-        const string expected = "a--b-------c--------d";
-
-        var helper = Create(new SlugHelperConfiguration
-        {
-            CollapseDashes = false,
-            CollapseWhiteSpace = false
-        });
-
-        Assert.Equal(expected, helper.GenerateSlug(original));
-    }
-
-    [Fact]
-    public void TestDiacriticRemoval()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDiacriticRemoval(ISlugHelper helper)
     {
         const string withDiacritics = "ñáîùëÓ";
         const string withoutDiacritics = "naiueo";
 
-        var helper = Create();
-
         Assert.Equal(withoutDiacritics, helper.GenerateSlug(withDiacritics));
     }
 
-    [Fact]
-    public void TestDeniedCharacterDeletion()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletion(ISlugHelper helper)
     {
         const string original = "!#$%&/()=";
         const string expected = "";
 
-        var helper = Create();
-
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestDeniedCharacterDeletionCustomized()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionCustomized(ISlugHelper helper)
     {
         const string original = "ab!#$%&/()=";
         const string expected = "b$";
 
         var config = new SlugHelperConfiguration();
-        config.AllowedChars.Remove('a');
-        config.AllowedChars.Add('$');
-        var helper = Create(config);
+        config.AllowedCharacters.Remove('a');
+        config.AllowedCharacters.Add('$');
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
 
-    [Fact]
-    public void TestDeniedCharacterDeletionLegacy()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionLegacy(ISlugHelper helper)
     {
         const string original = "!#$%&/()=";
         const string expected = "";
 
-        var helper = Create(new SlugHelperConfiguration
+        helper.Config = new SlugHelperConfiguration
         {
-            DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
-        });
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionLegacy2(ISlugHelper helper)
+    {
+        const string original = "!#$%&/()=";
+        const string expected = "!";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            DeniedCharactersRegex = new(@"[^!]")
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionLegacy3(ISlugHelper helper)
+    {
+        const string original = "regular! !slug";
+        const string expected = "regular!-!slug";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._\!]")
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionLegacy4(ISlugHelper helper)
+    {
+        const string original = "regular! !slug";
+        const string expected = "regular-slug";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
+        };
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
 
-    [Fact]
-    public void TestDeniedCharacterDeletionLegacyKeepsAllowedCharacters()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestDeniedCharacterDeletionLegacyKeepsAllowedCharacters(ISlugHelper helper)
     {
-        const string original = "Abc-123.$1$_x";
+        const string original = "Abc -123.$1$_x";
         const string expected = "abc-123.1_x";
 
-        var helper = Create(new SlugHelperConfiguration
+        helper.Config = new SlugHelperConfiguration
         {
-            DeniedCharactersRegex = @"[^a-zA-Z0-9\-\._]"
-        });
+            DeniedCharactersRegex = new(@"[^a-zA-Z0-9\-\._]")
+        };
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterReplacementWithWhitespace()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementWithWhitespace(ISlugHelper helper)
     {
         const string original = "     abcde     ";
         const string expected = "bcde";
@@ -172,13 +205,14 @@ public class SlugHelperTest
         var config = new SlugHelperConfiguration();
         config.StringReplacements.Add("a", " ");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterReplacement()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacement(ISlugHelper helper)
     {
         const string original = "abcde";
         const string expected = "xyzde";
@@ -188,13 +222,14 @@ public class SlugHelperTest
         config.StringReplacements.Add("b", "y");
         config.StringReplacements.Add("c", "z");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterDoubleReplacement()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterDoubleReplacement(ISlugHelper helper)
     {
         const string original = "a";
         const string expected = "c";
@@ -203,13 +238,14 @@ public class SlugHelperTest
         config.StringReplacements.Add("a", "b");
         config.StringReplacements.Add("b", "c");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterDoubleReplacementReversedOrder()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterDoubleReplacementReversedOrder(ISlugHelper helper)
     {
         const string original = "a";
         const string expected = "b";
@@ -218,13 +254,14 @@ public class SlugHelperTest
         config.StringReplacements.Add("b", "c");
         config.StringReplacements.Add("a", "b");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterReplacementOrdering()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementOrdering(ISlugHelper helper)
     {
         const string original = "catdogfish";
         const string expected = "cdf";
@@ -235,13 +272,14 @@ public class SlugHelperTest
         config.StringReplacements.Add("dog", "d");
         config.StringReplacements.Add("fish", "f");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterReplacementShortening()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementShortening(ISlugHelper helper)
     {
         const string original = "catdogfish";
         const string expected = "cdf";
@@ -251,13 +289,14 @@ public class SlugHelperTest
         config.StringReplacements.Add("dog", "d");
         config.StringReplacements.Add("fish", "f");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterReplacementLengthening()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementLengthening(ISlugHelper helper)
     {
         const string original = "a";
         const string expected = "ccdccdcc";
@@ -266,13 +305,14 @@ public class SlugHelperTest
         config.StringReplacements.Add("a", "bdbdb");
         config.StringReplacements.Add("b", "cc");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterReplacementLookBackwards()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementLookBackwards(ISlugHelper helper)
     {
         const string original = "cat";
         const string expected = "at";
@@ -281,13 +321,14 @@ public class SlugHelperTest
         config.StringReplacements.Add("a", "c");
         config.StringReplacements.Add("cc", "a");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestCharacterReplacementUmlauts()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementUmlauts(ISlugHelper helper)
     {
         var config = new SlugHelperConfiguration()
         {
@@ -300,12 +341,13 @@ public class SlugHelperTest
             },
         };
 
-        var helper = Create(config);
+        helper.Config = config;
         Assert.Equal("aeoeueaeoeuess", helper.GenerateSlug("äöüÄÖÜß"));
     }
 
-    [Fact]
-    public void TestCharacterReplacementUmlautsUppercaseSkipped()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementUmlautsUppercaseSkipped(ISlugHelper helper)
     {
         var config = new SlugHelperConfiguration()
         {
@@ -319,12 +361,13 @@ public class SlugHelperTest
             },
         };
 
-        var helper = Create(config);
+        helper.Config = config;
         Assert.Equal("aeoeueAOUss", helper.GenerateSlug("äöüÄÖÜß"));
     }
 
-    [Fact]
-    public void TestCharacterReplacementUmlautsUppercaseReplaced()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementUmlautsUppercaseReplaced(ISlugHelper helper)
     {
         var config = new SlugHelperConfiguration()
         {
@@ -341,12 +384,13 @@ public class SlugHelperTest
             },
         };
 
-        var helper = Create(config);
+        helper.Config = config;
         Assert.Equal("aeoeueAeOeUess", helper.GenerateSlug("äöüÄÖÜß"));
     }
 
-    [Fact]
-    public void TestCharacterReplacementDiacritics()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestCharacterReplacementDiacritics(ISlugHelper helper)
     {
         var config = new SlugHelperConfiguration();
         config.StringReplacements.Add("Å", "AA");
@@ -356,12 +400,13 @@ public class SlugHelperTest
         config.StringReplacements.Add("Ø", "OE");
         config.StringReplacements.Add("ø", "oe");
 
-        var helper = Create(config);
+        helper.Config = config;
         Assert.Equal("aa-aa-ae-ae-oe-oe", helper.GenerateSlug("Å å Æ æ Ø ø"));
     }
 
-    [Fact]
-    public void TestRecursiveReplacement()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestRecursiveReplacement(ISlugHelper helper)
     {
         const string original = "ycdabbadcz";
         const string expected = "yz";
@@ -370,13 +415,14 @@ public class SlugHelperTest
         config.StringReplacements.Add("abba", "");
         config.StringReplacements.Add("cddc", "");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestRecursiveReplacement2()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestRecursiveReplacement2(ISlugHelper helper)
     {
         const string original = "yababbabaz";
         const string expected = "yabbaz";
@@ -384,10 +430,195 @@ public class SlugHelperTest
         var config = new SlugHelperConfiguration();
         config.StringReplacements.Add("abba", "");
 
-        var helper = Create(config);
+        helper.Config = config;
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestEmptyString(ISlugHelper helper)
+    {
+        const string original = "";
+        const string expected = "";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestNullString(ISlugHelper helper)
+    {
+        Assert.Throws<ArgumentNullException>(() => helper.GenerateSlug(null));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestOnlyWhitespaceString(ISlugHelper helper)
+    {
+        const string original = "    \t\n\r    ";
+        const string expected = "";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestVeryLongString(ISlugHelper helper)
+    {
+        string original = new string('a', 10000) + " " + new string('b', 10000);
+        string expected = new string('a', 10000) + "-" + new string('b', 10000);
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestStringWithOnlySpecialCharacters(ISlugHelper helper)
+    {
+        const string original = "!@#$%^&*()_+{}|:<>?~`-=[];',./";
+        const string expected = "_-.";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestOnlyDashesInput(ISlugHelper helper)
+    {
+        const string original = "--------";
+        const string expected = "-";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestNoTrimmingWithLeadingAndTrailingSpaces(ISlugHelper helper)
+    {
+        const string original = "  hello world  ";
+        const string expected = "--hello-world--";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            TrimWhitespace = false,
+            CollapseDashes = false
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestReplacementWithEmptyStringThenCollapsing(ISlugHelper helper)
+    {
+        const string original = "hello & world";
+        const string expected = "hello-world";
+
+        var config = new SlugHelperConfiguration();
+        config.StringReplacements.Clear();
+        config.StringReplacements.Add(" ", "-");
+        config.StringReplacements.Add("&", "");
+        helper.Config = config;
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestMixedCharacterSets(ISlugHelper helper)
+    {
+        const string original = "Hello, 你好, Привет, مرحبا, こんにちは!";
+        const string expected = "hello-ni-hao-privet-mrhb-konnichiha";
+
+        var nonAsciiHelper = CreateNonAscii(helper.Config);
+
+        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestUrlFriendlyCharacterPreservation(ISlugHelper helper)
+    {
+        const string original = "file_name.with-special_chars.txt";
+        const string expected = "file_name.with-special_chars.txt";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestMultipleConsecutiveReplacements(ISlugHelper helper)
+    {
+        const string original = "a & b & c & d";
+        const string expected = "a-and-b-and-c-and-d";
+
+        var config = new SlugHelperConfiguration();
+        config.StringReplacements.Clear();
+        config.StringReplacements.Add(" ", "-");
+        config.StringReplacements.Add("&", "and");
+        helper.Config = config;
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestSlugifyAlreadySlugifiedString(ISlugHelper helper)
+    {
+        const string original = "already-slugified-string";
+        const string expected = "already-slugified-string";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestComplexNormalizationScenario(ISlugHelper helper)
+    {
+        // Contains combined characters that need normalization
+        const string original = "ǰ ǲ Ǵ ǵ";
+        const string expected = "j-dz-g-g";
+
+        var nonAsciiHelper = CreateNonAscii(helper.Config);
+
+        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestMathematicalSymbols(ISlugHelper helper)
+    {
+        const string original = "Area = π × r²";
+        const string expected = "area-p-x-r2";
+
+        var nonAsciiHelper = CreateNonAscii(helper.Config);
+
+        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestPotentialXssString(ISlugHelper helper)
+    {
+        const string original = "<script>alert('xss');</script>";
+        const string expected = "scriptalertxssscript";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestSqlInjectionString(ISlugHelper helper)
+    {
+        const string original = "'; DROP TABLE users; --";
+        const string expected = "-drop-table-users-";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+
 
     [Theory]
     [InlineData("E¢Ðƕtoy  mÚÄ´¨ss¨sïuy   !!!!!  Pingüiño", "etoy-muasssiuy-pinguino")]
@@ -406,75 +637,74 @@ public class SlugHelperTest
         Assert.Equal(output, helper.GenerateSlug(input));
     }
 
-    [Fact]
-    public void TestConfigForCollapsingDashes()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestConfigForCollapsingDashes(ISlugHelper helper)
     {
         const string original = "foo & bar";
         const string expected = "foo-bar";
 
-        var helper = Create();
-
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestConfigForCollapsingDashesWithMoreThanTwoDashes()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestConfigForCollapsingDashesWithMoreThanTwoDashes(ISlugHelper helper)
     {
         const string original = "foo & bar & & & Jazz&&&&&&&&";
         const string expected = "foo-bar-jazz";
 
-        var helper = Create();
-
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestConfigForNotCollapsingDashes()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestConfigForNotCollapsingDashes(ISlugHelper helper)
     {
         const string original = "foo & bar";
         const string expected = "foo--bar";
 
-        var helper = Create(new SlugHelperConfiguration
+        helper.Config = new SlugHelperConfiguration
         {
             CollapseDashes = false
-        });
+        };
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestConfigForTrimming()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestConfigForTrimming(ISlugHelper helper)
     {
         const string original = "  foo & bar  ";
         const string expected = "foo-bar";
 
-        var helper = Create(new SlugHelperConfiguration
+        helper.Config = new SlugHelperConfiguration
         {
             TrimWhitespace = true
-        });
+        };
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void TestHandlingOfUnicodeCharacters()
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestHandlingOfUnicodeCharacters(ISlugHelper helper)
     {
         const string original = "unicode ♥ support";
         const string expected = "unicode-support";
 
-        var helper = Create(new SlugHelperConfiguration
+        helper.Config = new SlugHelperConfiguration
         {
             TrimWhitespace = true,
             CollapseDashes = true
-        });
+        };
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
 
-#pragma warning disable xUnit1004 // Test methods should not be skipped
     [Fact(Skip = "We are not culture aware and do not support this.")]
-#pragma warning restore xUnit1004 // Test methods should not be skipped
     public void TurkishEncodingOfI()
     {
         //Set culture to Turkish
