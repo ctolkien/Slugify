@@ -739,4 +739,19 @@ public class SlugHelperTest
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
+
+    [Theory]
+    [InlineData(null, "abcdefghijgklmnopqrstuvwxy", "abcdefghijgklmnopqrstuvwxy")]
+    [InlineData(8, "abcdefghijgklmnopqrstuvwxy", "abcdefgh")]
+    [InlineData(8, "ab c d e fgh", "ab-c-d-e")]
+    [InlineData(7, "ab c d e", "ab-c-d")]
+    [InlineData(8, "ab c d ", "ab-c-d")]
+    public void MaximumLengthGivenTrimsUnnecessaryChars(int? length, string input, string expected)
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = length
+        });
+        Assert.Equal(expected, helper.GenerateSlug(input));
+    }
 }

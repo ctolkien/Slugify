@@ -209,3 +209,9 @@ Specifying the `DeniedCharactersRegex` option will disable the character removal
    });
    Console.WriteLine(helper.GenerateSlug("this is an foo example")); // "this-is-an-example"
    ```
+
+### `MaximumLength`
+
+This will limit the length of the generated slug to be a maximum of the number of chars given by the parameter. If the truncation happens in a way that a trailing `-` is left, it will be removed.
+
+- Default value: `null`
