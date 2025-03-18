@@ -83,6 +83,16 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
             }
         }
 
+        if (Config.MaximumLength.HasValue && sb.Length > Config.MaximumLength.Value)
+        {
+            sb.Remove(Config.MaximumLength.Value, sb.Length - Config.MaximumLength.Value);
+            // Remove trailing dash if it exists
+            if (sb[sb.Length - 1] == '-')
+            {
+                sb.Remove(sb.Length - 1, 1);
+            }
+        }
+
         return sb.ToString();
     }
 

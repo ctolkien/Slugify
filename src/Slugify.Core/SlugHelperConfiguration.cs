@@ -61,5 +61,10 @@ public class SlugHelperConfiguration
     /// </summary>
     public bool TrimWhitespace { get; set; } = true;
 
+    /// <summary>
+    /// Represents the maximum length of the slug. If the slug is longer than this value, it will be truncated.
+    /// </summary>
+    public int? MaximumLength { get; set; }
+
 }
 
