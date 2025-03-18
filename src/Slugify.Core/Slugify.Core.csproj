@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
 
-    <VersionPrefix>5.1.0</VersionPrefix>
+    <VersionPrefix>5.1.1</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -12,6 +12,7 @@
     <PackageId>Slugify.Core</PackageId>
     <PackageTags>URL;Slug;Web;Slugify</PackageTags>
     <PackageReleaseNotes>
+		5.1.1 - Fixes issue with Turkish `i` character.
 		5.1.0 - Adds support for MaximumLength to limit the length of the slug. Thanks @ntbm
 		5.0.0 - Rewrite using newer language features. Added support for Non-Ascii languages for SlugHelperForNonAsciiLanguages
 		4.0.0 - Bug fix relase from 3.0.0

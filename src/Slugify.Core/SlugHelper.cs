@@ -34,7 +34,7 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
         var normalizedInput = inputString.Normalize(NormalizationForm.FormD);
 
         normalizedInput = Config.TrimWhitespace ? normalizedInput.Trim() : normalizedInput;
-        normalizedInput = Config.ForceLowerCase ? normalizedInput.ToLower() : normalizedInput;
+        normalizedInput = Config.ForceLowerCase ? normalizedInput.ToLowerInvariant() : normalizedInput;
 
         var sb = new StringBuilder(normalizedInput);
 

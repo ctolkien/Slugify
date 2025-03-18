@@ -704,18 +704,17 @@ public class SlugHelperTest
     }
 
 
-    [Fact(Skip = "We are not culture aware and do not support this.")]
+    [Fact]
     public void TurkishEncodingOfI()
     {
         //Set culture to Turkish
         CultureInfo.CurrentCulture = new CultureInfo("tr-TR");
         const string original = "FIFA 18";
-        const string expected = "fıfa 18";
+        const string expected = "fifa-18";
 
         var helper = CreateNonAscii();
 
         Assert.Equal(expected, helper.GenerateSlug(original));
-
     }
 
     [Fact]
