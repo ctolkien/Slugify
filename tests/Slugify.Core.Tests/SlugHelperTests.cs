@@ -436,6 +436,191 @@ public class SlugHelperTest
     }
 
     [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestEmptyString(ISlugHelper helper)
+    {
+        const string original = "";
+        const string expected = "";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestNullString(ISlugHelper helper)
+    {
+        Assert.Throws<ArgumentNullException>(() => helper.GenerateSlug(null));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestOnlyWhitespaceString(ISlugHelper helper)
+    {
+        const string original = "    \t\n\r    ";
+        const string expected = "";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestVeryLongString(ISlugHelper helper)
+    {
+        string original = new string('a', 10000) + " " + new string('b', 10000);
+        string expected = new string('a', 10000) + "-" + new string('b', 10000);
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestStringWithOnlySpecialCharacters(ISlugHelper helper)
+    {
+        const string original = "!@#$%^&*()_+{}|:<>?~`-=[];',./";
+        const string expected = "_-.";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestOnlyDashesInput(ISlugHelper helper)
+    {
+        const string original = "--------";
+        const string expected = "-";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestNoTrimmingWithLeadingAndTrailingSpaces(ISlugHelper helper)
+    {
+        const string original = "  hello world  ";
+        const string expected = "--hello-world--";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            TrimWhitespace = false,
+            CollapseDashes = false
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestReplacementWithEmptyStringThenCollapsing(ISlugHelper helper)
+    {
+        const string original = "hello & world";
+        const string expected = "hello-world";
+
+        var config = new SlugHelperConfiguration();
+        config.StringReplacements.Clear();
+        config.StringReplacements.Add(" ", "-");
+        config.StringReplacements.Add("&", "");
+        helper.Config = config;
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestMixedCharacterSets(ISlugHelper helper)
+    {
+        const string original = "Hello, 你好, Привет, مرحبا, こんにちは!";
+        const string expected = "hello-ni-hao-privet-mrhb-konnichiha";
+
+        var nonAsciiHelper = CreateNonAscii(helper.Config);
+
+        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestUrlFriendlyCharacterPreservation(ISlugHelper helper)
+    {
+        const string original = "file_name.with-special_chars.txt";
+        const string expected = "file_name.with-special_chars.txt";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestMultipleConsecutiveReplacements(ISlugHelper helper)
+    {
+        const string original = "a & b & c & d";
+        const string expected = "a-and-b-and-c-and-d";
+
+        var config = new SlugHelperConfiguration();
+        config.StringReplacements.Clear();
+        config.StringReplacements.Add(" ", "-");
+        config.StringReplacements.Add("&", "and");
+        helper.Config = config;
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestSlugifyAlreadySlugifiedString(ISlugHelper helper)
+    {
+        const string original = "already-slugified-string";
+        const string expected = "already-slugified-string";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestComplexNormalizationScenario(ISlugHelper helper)
+    {
+        // Contains combined characters that need normalization
+        const string original = "ǰ ǲ Ǵ ǵ";
+        const string expected = "j-dz-g-g";
+
+        var nonAsciiHelper = CreateNonAscii(helper.Config);
+
+        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestMathematicalSymbols(ISlugHelper helper)
+    {
+        const string original = "Area = π × r²";
+        const string expected = "area-p-x-r2";
+
+        var nonAsciiHelper = CreateNonAscii(helper.Config);
+
+        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestPotentialXssString(ISlugHelper helper)
+    {
+        const string original = "<script>alert('xss');</script>";
+        const string expected = "scriptalertxssscript";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestSqlInjectionString(ISlugHelper helper)
+    {
+        const string original = "'; DROP TABLE users; --";
+        const string expected = "-drop-table-users-";
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+
+
+    [Theory]
     [InlineData("E¢Ðƕtoy  mÚÄ´¨ss¨sïuy   !!!!!  Pingüiño", "etoy-muasssiuy-pinguino")]
     [InlineData("QWE dfrewf# $%&!! asd", "qwe-dfrewf-asd")]
     [InlineData("You can't have any pudding if you don't eat your meat!", "you-cant-have-any-pudding-if-you-dont-eat-your-meat")]

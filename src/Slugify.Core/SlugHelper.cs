@@ -5,6 +5,10 @@ using System.Text.RegularExpressions;
 
 namespace Slugify;
 
+/// <summary>
+/// Generates a URL-friendly slug from a given string by normalizing and replacing characters.
+/// </summary>
+/// <param name="config">Specifies the configuration options for generating the slug, including transformations and allowed characters.</param>
 public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
 {
     protected static readonly SlugHelperConfiguration _defaultConfig = new();
@@ -13,8 +17,20 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
 
     public SlugHelper() : this(_defaultConfig) { }
 
+    /// <summary>
+    /// Generates a URL-friendly slug from the provided string by normalizing and replacing characters.
+    /// </summary>
+    /// <param name="inputString">The string to be transformed into a slug format.</param>
+    /// <returns>A string that represents the slug version of the input, with specified transformations applied.</returns>
+    /// <exception cref="ArgumentNullException">Thrown when the input string is null.</exception>
     public virtual string GenerateSlug(string inputString)
     {
+        if (inputString is null)
+        {
+            throw new ArgumentNullException(nameof(inputString));
+        }
+
+
         var normalizedInput = inputString.Normalize(NormalizationForm.FormD);
 
         normalizedInput = Config.TrimWhitespace ? normalizedInput.Trim() : normalizedInput;
