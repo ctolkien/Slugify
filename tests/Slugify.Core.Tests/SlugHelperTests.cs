@@ -707,14 +707,25 @@ public class SlugHelperTest
     [Fact]
     public void TurkishEncodingOfI()
     {
-        //Set culture to Turkish
-        CultureInfo.CurrentCulture = new CultureInfo("tr-TR");
-        const string original = "FIFA 18";
-        const string expected = "fifa-18";
+        var defaultCulture = CultureInfo.CurrentCulture;
 
-        var helper = CreateNonAscii();
+        try
+        {
+            //Set culture to Turkish
+            CultureInfo.CurrentCulture = new CultureInfo("tr-TR");
+            const string original = "FIFA 18";
+            const string expected = "fifa-18";
 
-        Assert.Equal(expected, helper.GenerateSlug(original));
+            var helper = CreateNonAscii();
+
+            Assert.Equal(expected, helper.GenerateSlug(original));
+        }
+        finally
+        {
+            //Reset culture
+            CultureInfo.CurrentCulture = defaultCulture;
+        }
+
     }
 
     [Fact]
