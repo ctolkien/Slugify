@@ -69,6 +69,7 @@ jobs:
       run: dotnet nuget push ${{ github.workspace}}/artifact/*.nupkg --api-key ${{ secrets.NUGETTOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
     - name: Extract version
+      if: inputs.environment == 'Production'
       shell: pwsh
       run: |
         $version = ([xml](Get-Content ${{ env.PATH_TO_CSPROJ }})).Project.PropertyGroup.VersionPrefix[0].Trim()
@@ -76,12 +77,7 @@ jobs:
         Add-Content -Path $env:GITHUB_ENV -Value "VERSIONWITHSUFFIX=$version-${{ github.run_number }}"
       
     - name: Create GitHub Release
-      if:  inputs.environment == 'PreRelease'
-      run: gh release create "${{ env.VERSIONWITHSUFFIX }}" --generate-notes --prerelease
-      env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-    - name: Create GitHub Release
-      if:  inputs.environment == 'Production'
+      if: inputs.environment == 'Production'
       run: gh release create "${{ env.VERSION }}" --generate-notes
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
