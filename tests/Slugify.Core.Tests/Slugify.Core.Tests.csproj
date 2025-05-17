@@ -4,6 +4,8 @@
     <TargetFramework>net8</TargetFramework>
     <IsPackable>false</IsPackable>
 	<NoWarn>xUnit1045;xUnit1004;IDE0130;SYSLIB1045;CA1859</NoWarn>
+	<AssemblyVersion>1.0.0.1</AssemblyVersion>
+	<FileVersion>1.0.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

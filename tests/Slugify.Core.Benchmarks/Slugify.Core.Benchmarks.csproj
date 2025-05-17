@@ -5,6 +5,8 @@
     <TargetFramework>net8</TargetFramework>
     <IsPackable>false</IsPackable>
 	<NoWarn>SYSLIB1045</NoWarn>
+	<AssemblyVersion>1.0.0.1</AssemblyVersion>
+	<FileVersion>1.0.0.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
