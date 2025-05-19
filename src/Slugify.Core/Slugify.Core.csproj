@@ -40,6 +40,8 @@ With default settings, you will get an hyphenized, lowercase, alphanumeric versi
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
+    <AssemblyVersion>5.1.1.1</AssemblyVersion>
+    <FileVersion>5.1.1.1</FileVersion>
   </PropertyGroup>
 
   <!-- Deterministic builds -->

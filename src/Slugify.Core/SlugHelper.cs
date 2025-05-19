@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Slugify.Core;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -30,9 +31,11 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
             throw new ArgumentNullException(nameof(inputString));
         }
 
+        var normalizedInput = config.SupportNonAsciiLanguages
+            ? UnicodeDecoder.UniDecode(inputString)
+            : inputString;
 
-        var normalizedInput = inputString.Normalize(NormalizationForm.FormD);
-
+        normalizedInput = normalizedInput.Normalize(NormalizationForm.FormD);
         normalizedInput = Config.TrimWhitespace ? normalizedInput.Trim() : normalizedInput;
         normalizedInput = Config.ForceLowerCase ? normalizedInput.ToLowerInvariant() : normalizedInput;
 
@@ -97,4 +100,3 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
     }
 
 }
-

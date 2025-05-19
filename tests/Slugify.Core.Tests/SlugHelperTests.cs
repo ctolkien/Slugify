@@ -8,9 +8,7 @@ namespace Slugify.Tests;
 public class SlugHelperTest
 {
     private static ISlugHelper Create() => Create(new SlugHelperConfiguration());
-    private static ISlugHelper CreateNonAscii() => CreateNonAscii(new SlugHelperConfiguration());
     private static ISlugHelper Create(SlugHelperConfiguration config) => new SlugHelper(config);
-    private static ISlugHelper CreateNonAscii(SlugHelperConfiguration config) => new SlugHelperForNonAsciiLanguages(config);
 
     [Fact]
     public void TestEmptyConfig()
@@ -59,6 +57,11 @@ public class SlugHelperTest
     public static TheoryData<ISlugHelper> GenerateStandardSluggers => new()
     {
         { Create() }
+    };
+
+    public static TheoryData<ISlugHelper> GenerateNonAsciiSluggers => new()
+    {
+        { Create(new SlugHelperConfiguration() { SupportNonAsciiLanguages = true }) }
     };
 
     [Theory]
@@ -526,15 +529,13 @@ public class SlugHelperTest
     }
 
     [Theory]
-    [MemberData(nameof(GenerateStandardSluggers))]
+    [MemberData(nameof(GenerateNonAsciiSluggers))]
     public void TestMixedCharacterSets(ISlugHelper helper)
     {
         const string original = "Hello, 你好, Привет, مرحبا, こんにちは!";
         const string expected = "hello-ni-hao-privet-mrhb-konnichiha";
 
-        var nonAsciiHelper = CreateNonAscii(helper.Config);
-
-        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+        Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
     [Theory]
@@ -574,28 +575,24 @@ public class SlugHelperTest
     }
 
     [Theory]
-    [MemberData(nameof(GenerateStandardSluggers))]
+    [MemberData(nameof(GenerateNonAsciiSluggers))]
     public void TestComplexNormalizationScenario(ISlugHelper helper)
     {
         // Contains combined characters that need normalization
         const string original = "ǰ ǲ Ǵ ǵ";
         const string expected = "j-dz-g-g";
 
-        var nonAsciiHelper = CreateNonAscii(helper.Config);
-
-        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+        Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
     [Theory]
-    [MemberData(nameof(GenerateStandardSluggers))]
+    [MemberData(nameof(GenerateNonAsciiSluggers))]
     public void TestMathematicalSymbols(ISlugHelper helper)
     {
         const string original = "Area = π × r²";
         const string expected = "area-p-x-r2";
 
-        var nonAsciiHelper = CreateNonAscii(helper.Config);
-
-        Assert.Equal(expected, nonAsciiHelper.GenerateSlug(original));
+        Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
     [Theory]
@@ -633,6 +630,25 @@ public class SlugHelperTest
     public void TestFullFunctionality(string input, string output)
     {
         var helper = Create();
+
+        Assert.Equal(output, helper.GenerateSlug(input));
+    }
+
+    [Theory]
+    [InlineData("E¢Ðƕtoy  mÚÄ´¨ss¨sïuy   !!!!!  Pingüiño", "ecdhvtoy-muasssiuy-pinguino")]
+    [InlineData("QWE dfrewf# $%&!! asd", "qwe-dfrewf-asd")]
+    [InlineData("You can't have any pudding if you don't eat your meat!", "you-cant-have-any-pudding-if-you-dont-eat-your-meat")]
+    [InlineData("El veloz murciélago hindú", "el-veloz-murcielago-hindu")]
+    [InlineData("Médicos sin medicinas medican meditando", "medicos-sin-medicinas-medican-meditando")]
+    [InlineData("Você está numa situação lamentável", "voce-esta-numa-situacao-lamentavel")]
+    [InlineData("crème brûlée", "creme-brulee")]
+    [InlineData("ä ö ü", "a-o-u")]
+    [InlineData("ç Ç ğ Ğ ı I i İ ö Ö ş Ş ü Ü", "c-c-g-g-i-i-i-i-o-o-s-s-u-u")]
+    [InlineData("Актуални предложения", "aktualni-predlozheniya")]
+
+    public void TestFullNonAsciiFunctionality(string input, string output)
+    {
+        var helper = Create(new SlugHelperConfiguration() { SupportNonAsciiLanguages = true });
 
         Assert.Equal(output, helper.GenerateSlug(input));
     }
@@ -704,18 +720,17 @@ public class SlugHelperTest
     }
 
 
-    [Fact]
-    public void TurkishEncodingOfI_NonAscii()
+    [Theory]
+    [MemberData(nameof(GenerateNonAsciiSluggers))]
+    public void TurkishEncoding_NonAscii(ISlugHelper helper)
     {
         var defaultCulture = CultureInfo.CurrentCulture;
         try
         {
             //Set culture to Turkish
             CultureInfo.CurrentCulture = new CultureInfo("tr-TR");
-            const string original = "FIFA 18";
-            const string expected = "fifa-18";
-
-            var helper = CreateNonAscii();
+            const string original = "ÇEVRE VE ŞEHİRCİLİK BAKANLIĞI İstanbul Fen İşleri Daire Başkanlığı Özel İdare Müdürlüğü";
+            const string expected = "cevre-ve-sehircilik-bakanligi-istanbul-fen-isleri-daire-baskanligi-ozel-idare-mudurlugu";
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
@@ -726,8 +741,9 @@ public class SlugHelperTest
         }
     }
 
-    [Fact]
-    public void TurkishEncodingOfI()
+    [Theory]
+    [MemberData(nameof(GenerateNonAsciiSluggers))]
+    public void TurkishEncodingOfI(ISlugHelper helper)
     {
         var defaultCulture = CultureInfo.CurrentCulture;
         try
@@ -736,8 +752,6 @@ public class SlugHelperTest
             CultureInfo.CurrentCulture = new CultureInfo("tr-TR");
             const string original = "FIFA 18";
             const string expected = "fifa-18";
-
-            var helper = Create();
 
             Assert.Equal(expected, helper.GenerateSlug(original));
         }
@@ -748,24 +762,22 @@ public class SlugHelperTest
         }
     }
 
-    [Fact]
-    public void Arabic()
+    [Theory]
+    [MemberData(nameof(GenerateNonAsciiSluggers))]
+    public void Arabic(ISlugHelper helper)
     {
         const string original = "نوشتار فارسی";
         const string expected = "nwshtr-frsy";
 
-        var helper = CreateNonAscii();
-
         Assert.Equal(expected, helper.GenerateSlug(original));
     }
 
-    [Fact]
-    public void Cyrillic()
+    [Theory]
+    [MemberData(nameof(GenerateNonAsciiSluggers))]
+    public void Cyrillic(ISlugHelper helper)
     {
         const string original = "Наизусть";
         const string expected = "naizust";
-
-        var helper = CreateNonAscii();
 
         Assert.Equal(expected, helper.GenerateSlug(original));
     }

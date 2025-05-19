@@ -82,7 +82,11 @@ public partial class SlugifyBenchmarks
     [Benchmark]
     public void NonAscii()
     {
-        var helper = new SlugHelperForNonAsciiLanguages();
+        var helper = new SlugHelper(new SlugHelperConfiguration()
+        {
+            SupportNonAsciiLanguages = true
+        });
+
         for (var i = 0; i < _textList.Count; i++)
         {
             helper.GenerateSlug(_textList[i]);

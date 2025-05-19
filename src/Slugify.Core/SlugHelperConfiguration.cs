@@ -66,5 +66,10 @@ public class SlugHelperConfiguration
     /// </summary>
     public int? MaximumLength { get; set; }
 
+    /// <summary>
+    /// Enable non-ASCII languages support. Defaults to false
+    /// </summary>
+    public bool SupportNonAsciiLanguages { get; set; }
+
 }
 
