@@ -112,6 +112,23 @@ var result = helper.GenerateSlug("Simple,short&quick Example");
 Console.WriteLine(result); // Simple-short-quick-Example
 ```
 
+To enable hash-based shortening for unique truncated slugs:
+
+```csharp
+var config = new SlugHelperConfiguration
+{
+    MaximumLength = 12,
+    EnableHashedShortening = true
+};
+
+var helper = new SlugHelper(config);
+
+// These will produce different results despite similar input
+Console.WriteLine(helper.GenerateSlug("The very long name liga"));     // "the-very-54"
+Console.WriteLine(helper.GenerateSlug("The very long name liga (W)")); // "the-very-a2"
+Console.WriteLine(helper.GenerateSlug("The very long name liga (M)")); // "the-very-0a"
+```
+
 The following options can be configured with the `SlugHelperConfiguration`:
 
 ### `ForceLowerCase`
@@ -215,3 +232,15 @@ Specifying the `DeniedCharactersRegex` option will disable the character removal
 This will limit the length of the generated slug to be a maximum of the number of chars given by the parameter. If the truncation happens in a way that a trailing `-` is left, it will be removed.
 
 - Default value: `null`
+
+### `EnableHashedShortening`
+
+When enabled, slugs that exceed `MaximumLength` will be shortened with a hash postfix to ensure uniqueness. The hash postfix is a 2-character suffix derived from the full slug before truncation. This prevents different inputs from producing identical shortened slugs.
+
+For example, when `MaximumLength` is 12:
+- `"The very long name liga"` becomes `"the-very-54"` (instead of `"the-very-lon"`)
+- `"The very long name liga (W)"` becomes `"the-very-a2"` (instead of `"the-very-lon"`)
+
+The hash postfix format is `"-XX"` where `XX` is a 2-character lowercase hexadecimal hash. If `MaximumLength` is too small to accommodate the hash postfix (less than 4 characters), it will fall back to simple truncation.
+
+- Default value: `false`

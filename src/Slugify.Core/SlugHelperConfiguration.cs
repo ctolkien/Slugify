@@ -67,6 +67,13 @@ public class SlugHelperConfiguration
     public int? MaximumLength { get; set; }
 
     /// <summary>
+    /// When enabled, slugs that exceed MaximumLength will be shortened with a hash postfix to ensure uniqueness.
+    /// The hash postfix is a 2-character suffix derived from the full slug before truncation.
+    /// Defaults to false for backward compatibility.
+    /// </summary>
+    public bool EnableHashedShortening { get; set; }
+
+    /// <summary>
     /// Enable non-ASCII languages support. Defaults to false
     /// </summary>
     public bool SupportNonAsciiLanguages { get; set; }
