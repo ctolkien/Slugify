@@ -88,15 +88,66 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
 
         if (Config.MaximumLength.HasValue && sb.Length > Config.MaximumLength.Value)
         {
-            sb.Remove(Config.MaximumLength.Value, sb.Length - Config.MaximumLength.Value);
-            // Remove trailing dash if it exists
-            if (sb.Length > 0 && sb[sb.Length - 1] == '-')
+            if (Config.EnableHashedShortening)
             {
-                sb.Remove(sb.Length - 1, 1);
+                // Generate hash from the full slug before truncation
+                var fullSlug = sb.ToString();
+                var hash = GenerateSlugHash(fullSlug);
+                
+                // Calculate target length leaving room for hash (2 chars) and separator (1 char)
+                var targetLength = Config.MaximumLength.Value - 3; // -3 for "-XX" pattern
+                if (targetLength < 1)
+                {
+                    // If maximum length is too small for hash postfix, just truncate normally
+                    sb.Remove(Config.MaximumLength.Value, sb.Length - Config.MaximumLength.Value);
+                }
+                else
+                {
+                    // Truncate to make room for hash
+                    sb.Remove(targetLength, sb.Length - targetLength);
+                    
+                    // Remove trailing dash if it exists
+                    while (sb.Length > 0 && sb[sb.Length - 1] == '-')
+                    {
+                        sb.Remove(sb.Length - 1, 1);
+                    }
+                    
+                    // Append hash postfix
+                    sb.Append('-');
+                    sb.Append(hash);
+                }
+            }
+            else
+            {
+                // Original behavior: simple truncation
+                sb.Remove(Config.MaximumLength.Value, sb.Length - Config.MaximumLength.Value);
+                // Remove trailing dash if it exists
+                if (sb.Length > 0 && sb[sb.Length - 1] == '-')
+                {
+                    sb.Remove(sb.Length - 1, 1);
+                }
             }
         }
 
         return sb.ToString();
+    }
+
+    /// <summary>
+    /// Generates a short 2-character hash from the input string for use as a postfix.
+    /// </summary>
+    /// <param name="input">The input string to hash</param>
+    /// <returns>A 2-character lowercase hexadecimal hash</returns>
+    private static string GenerateSlugHash(string input)
+    {
+        // Use a simple hash based on the string's hash code
+        // This provides consistent results across runs while being simple
+        var hash = input.GetHashCode();
+        
+        // Convert to unsigned and take lower 8 bits for a byte value
+        var byteValue = (byte)(hash & 0xFF);
+        
+        // Convert to lowercase hex string
+        return byteValue.ToString("x2");
     }
 
 }

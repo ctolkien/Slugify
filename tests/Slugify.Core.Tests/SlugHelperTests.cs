@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 
 using Xunit;
 
@@ -795,6 +796,99 @@ public class SlugHelperTest
             MaximumLength = length
         });
         Assert.Equal(expected, helper.GenerateSlug(input));
+    }
+
+    [Theory]
+    [InlineData("The very long name liga", 12)]
+    [InlineData("The very long name liga (W)", 12)]
+    [InlineData("The very long name liga (M)", 12)]
+    [InlineData("abcdefghijklmnopqrstuvwxy", 15)]
+    public void EnableHashedShorteningCreatesUniqueResults(string input, int maxLength)
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = maxLength,
+            EnableHashedShortening = true
+        });
+        
+        var result = helper.GenerateSlug(input);
+        
+        // Should be within the maximum length
+        Assert.True(result.Length <= maxLength);
+        
+        // Should end with a dash followed by 2 hex characters (hash)
+        Assert.True(result.Length >= 3); // At least "X-YZ"
+        Assert.Equal('-', result[result.Length - 3]);
+        
+        // Last 2 characters should be valid hex
+        var hash = result.Substring(result.Length - 2);
+        Assert.True(hash.All(c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')));
+    }
+
+    [Fact]
+    public void EnableHashedShorteningCreatesDifferentHashesForDifferentInputs()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 12,
+            EnableHashedShortening = true
+        });
+        
+        var result1 = helper.GenerateSlug("The very long name liga");
+        var result2 = helper.GenerateSlug("The very long name liga (W)");
+        var result3 = helper.GenerateSlug("The very long name liga (M)");
+        
+        // All should be different
+        Assert.NotEqual(result1, result2);
+        Assert.NotEqual(result1, result3);
+        Assert.NotEqual(result2, result3);
+        
+        // All should have different hash suffixes
+        var hash1 = result1.Substring(result1.Length - 2);
+        var hash2 = result2.Substring(result2.Length - 2);
+        var hash3 = result3.Substring(result3.Length - 2);
+        
+        Assert.NotEqual(hash1, hash2);
+        Assert.NotEqual(hash1, hash3);
+        Assert.NotEqual(hash2, hash3);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithTooShortMaxLengthFallsBackToTruncation()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 3,
+            EnableHashedShortening = true
+        });
+        
+        var result = helper.GenerateSlug("test input");
+        
+        // Should fallback to simple truncation
+        Assert.Equal(3, result.Length);
+        Assert.Equal("tes", result);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithNoTruncationNeededBehavesNormally()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 50,
+            EnableHashedShortening = true
+        });
+        
+        var result = helper.GenerateSlug("short");
+        
+        // Should not add hash if no truncation is needed
+        Assert.Equal("short", result);
+    }
+
+    [Fact]
+    public void HashedShorteningIsDisabledByDefault()
+    {
+        var config = new SlugHelperConfiguration();
+        Assert.False(config.EnableHashedShortening);
     }
 
     [Fact]
