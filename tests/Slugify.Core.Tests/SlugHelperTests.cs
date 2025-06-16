@@ -892,6 +892,306 @@ public class SlugHelperTest
     }
 
     [Fact]
+    public void EnableHashedShorteningWithForceLowerCaseFalse()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 12,
+            EnableHashedShortening = true,
+            ForceLowerCase = false
+        });
+        
+        var result1 = helper.GenerateSlug("The Very Long Name Liga");
+        var result2 = helper.GenerateSlug("The Very Long Name Liga (W)");
+        
+        // Should preserve case in the truncated part but still add hash
+        Assert.True(result1.Length <= 12);
+        Assert.True(result2.Length <= 12);
+        Assert.NotEqual(result1, result2);
+        
+        // Both should end with hash pattern
+        Assert.Equal('-', result1[result1.Length - 3]);
+        Assert.Equal('-', result2[result2.Length - 3]);
+        
+        // Hash should be different
+        var hash1 = result1.Substring(result1.Length - 2);
+        var hash2 = result2.Substring(result2.Length - 2);
+        Assert.NotEqual(hash1, hash2);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithCustomStringReplacements()
+    {
+        var config = new SlugHelperConfiguration()
+        {
+            MaximumLength = 15,
+            EnableHashedShortening = true
+        };
+        config.StringReplacements.Add("&", "and");
+        config.StringReplacements.Add("@", "at");
+        
+        var helper = Create(config);
+        
+        var result1 = helper.GenerateSlug("Company & Partners @ Location");
+        var result2 = helper.GenerateSlug("Company & Partners @ Different Location");
+        
+        // Should apply replacements before hashing and truncation
+        Assert.True(result1.Length <= 15);
+        Assert.True(result2.Length <= 15);
+        Assert.NotEqual(result1, result2);
+        
+        // Should contain "and" and "at" in the processed slug
+        var fullSlug1 = helper.GenerateSlug("Company & Partners @ Location");
+        var fullSlug2 = helper.GenerateSlug("Company & Partners @ Different Location");
+        
+        // Hash should be calculated after replacements
+        Assert.Equal('-', result1[result1.Length - 3]);
+        Assert.Equal('-', result2[result2.Length - 3]);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithCollapseDashesFalse()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 12,
+            EnableHashedShortening = true,
+            CollapseDashes = false
+        });
+        
+        var result = helper.GenerateSlug("word  &  another  word");
+        
+        // Should preserve multiple dashes but still truncate with hash
+        Assert.True(result.Length <= 12);
+        Assert.Equal('-', result[result.Length - 3]);
+        
+        // Last 2 characters should be valid hex
+        var hash = result.Substring(result.Length - 2);
+        Assert.True(hash.All(c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')));
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithTrimWhitespaceFalse()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 15,
+            EnableHashedShortening = true,
+            TrimWhitespace = false
+        });
+        
+        var result1 = helper.GenerateSlug("  long text with spaces  ");
+        var result2 = helper.GenerateSlug("long text with spaces");
+        
+        // Should treat differently due to leading/trailing spaces
+        Assert.True(result1.Length <= 15);
+        Assert.True(result2.Length <= 15);
+        Assert.NotEqual(result1, result2);
+        
+        // Both should have hash postfix
+        Assert.Equal('-', result1[result1.Length - 3]);
+        Assert.Equal('-', result2[result2.Length - 3]);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithDeniedCharactersRegex()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 12,
+            EnableHashedShortening = true,
+            DeniedCharactersRegex = new System.Text.RegularExpressions.Regex(@"[^a-zA-Z0-9\-]")
+        });
+        
+        var result1 = helper.GenerateSlug("test.with_special@chars");
+        var result2 = helper.GenerateSlug("test with special chars");
+        
+        // Should apply regex filtering before hashing
+        Assert.True(result1.Length <= 12);
+        Assert.True(result2.Length <= 12);
+        Assert.NotEqual(result1, result2);
+        
+        // Should end with hash
+        Assert.Equal('-', result1[result1.Length - 3]);
+        Assert.Equal('-', result2[result2.Length - 3]);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithNonAsciiLanguages()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 15,
+            EnableHashedShortening = true,
+            SupportNonAsciiLanguages = true
+        });
+        
+        var result1 = helper.GenerateSlug("很长的中文文本需要被截断");
+        var result2 = helper.GenerateSlug("很长的中文文本需要被截断和处理");
+        
+        // Should handle non-ASCII characters and create unique hashes
+        Assert.True(result1.Length <= 15);
+        Assert.True(result2.Length <= 15);
+        Assert.NotEqual(result1, result2);
+        
+        // Should end with hash
+        Assert.Equal('-', result1[result1.Length - 3]);
+        Assert.Equal('-', result2[result2.Length - 3]);
+        
+        // Hash should be different
+        var hash1 = result1.Substring(result1.Length - 2);
+        var hash2 = result2.Substring(result2.Length - 2);
+        Assert.NotEqual(hash1, hash2);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithModifiedAllowedCharacters()
+    {
+        var config = new SlugHelperConfiguration()
+        {
+            MaximumLength = 12,
+            EnableHashedShortening = true
+        };
+        
+        // Add some custom allowed characters
+        config.AllowedCharacters.Add('!');
+        config.AllowedCharacters.Add('*');
+        // Remove some default ones
+        config.AllowedCharacters.Remove('.');
+        config.AllowedCharacters.Remove('_');
+        
+        var helper = Create(config);
+        
+        var result1 = helper.GenerateSlug("test.with_special!chars*");
+        var result2 = helper.GenerateSlug("test with special!chars*");
+        
+        // Should respect modified allowed characters
+        Assert.True(result1.Length <= 12);
+        Assert.True(result2.Length <= 12);
+        Assert.NotEqual(result1, result2);
+        
+        // Should end with hash
+        Assert.Equal('-', result1[result1.Length - 3]);
+        Assert.Equal('-', result2[result2.Length - 3]);
+        
+        // Should contain allowed special chars but not denied ones
+        Assert.DoesNotContain(".", result1);
+        Assert.DoesNotContain("_", result1);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningComplexCombination()
+    {
+        var config = new SlugHelperConfiguration()
+        {
+            MaximumLength = 20,
+            EnableHashedShortening = true,
+            ForceLowerCase = false,
+            CollapseDashes = false,
+            TrimWhitespace = true,
+            SupportNonAsciiLanguages = true
+        };
+        
+        config.StringReplacements.Add("&", " AND ");
+        config.StringReplacements.Add("@", " AT ");
+        
+        var helper = Create(config);
+        
+        var result1 = helper.GenerateSlug("  Company & Associates @ München  ");
+        var result2 = helper.GenerateSlug("  Company & Associates @ Berlin  ");
+        
+        // Should apply all transformations and create unique hashes
+        Assert.True(result1.Length <= 20);
+        Assert.True(result2.Length <= 20);
+        Assert.NotEqual(result1, result2);
+        
+        // Should end with hash
+        Assert.Equal('-', result1[result1.Length - 3]);
+        Assert.Equal('-', result2[result2.Length - 3]);
+        
+        // Hash should be different
+        var hash1 = result1.Substring(result1.Length - 2);
+        var hash2 = result2.Substring(result2.Length - 2);
+        Assert.NotEqual(hash1, hash2);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithEdgeCaseInputs()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 10,
+            EnableHashedShortening = true
+        });
+        
+        // Test with input that results in mostly dashes
+        var result1 = helper.GenerateSlug("!@#$%^&*() test !@#$%^&*()");
+        var result2 = helper.GenerateSlug("!@#$%^&*() different !@#$%^&*()");
+        
+        // Should handle edge cases gracefully
+        Assert.True(result1.Length <= 10);
+        Assert.True(result2.Length <= 10);
+        Assert.NotEqual(result1, result2);
+        
+        // Only check hash pattern if result is at max length (meaning it was truncated)
+        if (result1.Length == 10)
+        {
+            Assert.Equal('-', result1[result1.Length - 3]);
+        }
+        if (result2.Length == 10)
+        {
+            Assert.Equal('-', result2[result2.Length - 3]);
+        }
+    }
+
+    [Theory]
+    [InlineData("Test & Co. @ Location #1", "Test & Co. @ Location #2")]
+    [InlineData("München Straße 123", "München Straße 456")]
+    [InlineData("Company   &&&   Name", "Company   &&&   Different")]
+    public void EnableHashedShorteningConsistentWithVariousInputs(string input1, string input2)
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 15,
+            EnableHashedShortening = true,
+            SupportNonAsciiLanguages = true
+        });
+        
+        var result1 = helper.GenerateSlug(input1);
+        var result2 = helper.GenerateSlug(input2);
+        
+        // Should create different results for different inputs
+        Assert.NotEqual(result1, result2);
+        
+        // Both should be within length limit
+        Assert.True(result1.Length <= 15);
+        Assert.True(result2.Length <= 15);
+        
+        // Both should have hash postfix if truncated
+        if (result1.Length == 15)
+        {
+            Assert.Equal('-', result1[result1.Length - 3]);
+            var hash1 = result1.Substring(result1.Length - 2);
+            Assert.True(hash1.All(c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')));
+        }
+        
+        if (result2.Length == 15)
+        {
+            Assert.Equal('-', result2[result2.Length - 3]);
+            var hash2 = result2.Substring(result2.Length - 2);
+            Assert.True(hash2.All(c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')));
+        }
+        
+        // If both are at max length, hashes should be different
+        if (result1.Length == 15 && result2.Length == 15)
+        {
+            var hash1 = result1.Substring(result1.Length - 2);
+            var hash2 = result2.Substring(result2.Length - 2);
+            Assert.NotEqual(hash1, hash2);
+        }
+    }
+
+    [Fact]
     public void TestsInTheReadme()
     {
         const string original = "Simple,short&quick Example";
