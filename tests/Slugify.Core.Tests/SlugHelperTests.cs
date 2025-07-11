@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -889,6 +890,169 @@ public class SlugHelperTest
     {
         var config = new SlugHelperConfiguration();
         Assert.False(config.EnableHashedShortening);
+    }
+
+    [Fact]
+    public void HashLengthDefaultsToTwo()
+    {
+        var config = new SlugHelperConfiguration();
+        Assert.Equal(2, config.HashLength);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithCustomHashLength()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 15,
+            EnableHashedShortening = true,
+            HashLength = 4
+        });
+        
+        var result = helper.GenerateSlug("The very long name that needs truncation");
+        
+        // Should be within the maximum length
+        Assert.True(result.Length <= 15);
+        
+        // Should end with a dash followed by 4 hex characters
+        Assert.Equal('-', result[result.Length - 5]);
+        var hash = result.Substring(result.Length - 4);
+        Assert.Equal(4, hash.Length);
+        Assert.True(hash.All(c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')));
+    }
+
+    [Fact]
+    public void EnableHashedShorteningWithHashLengthSix()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 20,
+            EnableHashedShortening = true,
+            HashLength = 6
+        });
+        
+        var result = helper.GenerateSlug("The very long name that needs truncation");
+        
+        // Should be within the maximum length
+        Assert.True(result.Length <= 20);
+        
+        // Should end with a dash followed by 6 hex characters
+        Assert.Equal('-', result[result.Length - 7]);
+        var hash = result.Substring(result.Length - 6);
+        Assert.Equal(6, hash.Length);
+        Assert.True(hash.All(c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')));
+    }
+
+    [Fact]
+    public void EnableHashedShorteningHashLengthIsClamped()
+    {
+        // Test that hash length is clamped to valid range (2-6)
+        var helperTooSmall = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 10,
+            EnableHashedShortening = true,
+            HashLength = 1 // Should be clamped to 2
+        });
+        
+        var resultTooSmall = helperTooSmall.GenerateSlug("test input for hashing");
+        var hashTooSmall = resultTooSmall.Substring(resultTooSmall.Length - 2);
+        Assert.Equal(2, hashTooSmall.Length);
+        
+        var helperTooBig = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 15,
+            EnableHashedShortening = true,
+            HashLength = 10 // Should be clamped to 6
+        });
+        
+        var resultTooBig = helperTooBig.GenerateSlug("test input for hashing");
+        var hashTooBig = resultTooBig.Substring(resultTooBig.Length - 6);
+        Assert.Equal(6, hashTooBig.Length);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningImprovedCollisionResistance()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 15,
+            EnableHashedShortening = true,
+            HashLength = 4 // Using 4 chars for better collision resistance
+        });
+        
+        // Generate many different inputs with similar prefixes
+        var inputs = new[]
+        {
+            "The very long name liga",
+            "The very long name liga (W)",
+            "The very long name liga (M)",
+            "The very long name liga (L)",
+            "The very long name liga (XL)",
+            "The very long name liga (XXL)",
+            "The very long name liga Black",
+            "The very long name liga White",
+            "The very long name liga Red",
+            "The very long name liga Blue",
+            "The very long name liga Green",
+            "The very long name liga Yellow",
+            "The very long name liga Orange",
+            "The very long name liga Purple",
+            "The very long name liga Pink",
+            "The very long name liga Brown",
+            "The very long name liga Gray",
+            "The very long name liga Silver",
+            "The very long name liga Gold",
+            "The very long name liga Platinum"
+        };
+        
+        var results = new HashSet<string>();
+        var hashes = new HashSet<string>();
+        
+        foreach (var input in inputs)
+        {
+            var result = helper.GenerateSlug(input);
+            var hash = result.Substring(result.Length - 4);
+            
+            // Each result should be unique
+            Assert.True(results.Add(result), $"Duplicate result found: {result}");
+            
+            // Each hash should be unique (with 4 chars we have 65536 possibilities)
+            Assert.True(hashes.Add(hash), $"Hash collision found: {hash} for input: {input}");
+            
+            // Verify result is within length limit
+            Assert.True(result.Length <= 15);
+            
+            // Verify hash format
+            Assert.True(hash.All(c => (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')));
+        }
+        
+        // With 20 inputs and 4-char hash (65536 possibilities), we should have no collisions
+        Assert.Equal(inputs.Length, results.Count);
+        Assert.Equal(inputs.Length, hashes.Count);
+    }
+
+    [Fact]
+    public void EnableHashedShorteningDeterministicAcrossPlatforms()
+    {
+        var helper = Create(new SlugHelperConfiguration()
+        {
+            MaximumLength = 12,
+            EnableHashedShortening = true,
+            HashLength = 4
+        });
+        
+        // Test that the same input produces the same hash consistently
+        var input = "The very long name that needs truncation";
+        var result1 = helper.GenerateSlug(input);
+        var result2 = helper.GenerateSlug(input);
+        
+        Assert.Equal(result1, result2);
+        
+        // Extract hash parts
+        var hash1 = result1.Substring(result1.Length - 4);
+        var hash2 = result2.Substring(result2.Length - 4);
+        
+        Assert.Equal(hash1, hash2);
     }
 
     [Fact]

@@ -92,10 +92,11 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
             {
                 // Generate hash from the full slug before truncation
                 var fullSlug = sb.ToString();
-                var hash = GenerateSlugHash(fullSlug);
+                var hash = GenerateSlugHash(fullSlug, Config.HashLength);
                 
-                // Calculate target length leaving room for hash (2 chars) and separator (1 char)
-                var targetLength = Config.MaximumLength.Value - 3; // -3 for "-XX" pattern
+                // Calculate target length leaving room for hash and separator
+                var hashWithSeparator = Config.HashLength + 1; // +1 for the dash
+                var targetLength = Config.MaximumLength.Value - hashWithSeparator;
                 if (targetLength < 1)
                 {
                     // If maximum length is too small for hash postfix, just truncate normally
@@ -133,21 +134,37 @@ public class SlugHelper(SlugHelperConfiguration config) : ISlugHelper
     }
 
     /// <summary>
-    /// Generates a short 2-character hash from the input string for use as a postfix.
+    /// Generates a deterministic hash from the input string for use as a postfix.
+    /// Uses FNV-1a algorithm for consistent cross-platform results and better collision resistance.
     /// </summary>
     /// <param name="input">The input string to hash</param>
-    /// <returns>A 2-character lowercase hexadecimal hash</returns>
-    private static string GenerateSlugHash(string input)
+    /// <param name="length">The desired length of the hash (2-6 characters)</param>
+    /// <returns>A lowercase hexadecimal hash of the specified length</returns>
+    private static string GenerateSlugHash(string input, int length)
     {
-        // Use a simple hash based on the string's hash code
-        // This provides consistent results across runs while being simple
-        var hash = input.GetHashCode();
+        // Clamp length to valid range
+        length = Math.Max(2, Math.Min(6, length));
         
-        // Convert to unsigned and take lower 8 bits for a byte value
-        var byteValue = (byte)(hash & 0xFF);
+        // FNV-1a hash algorithm constants
+        const uint FNV_OFFSET_BASIS = 2166136261;
+        const uint FNV_PRIME = 16777619;
         
-        // Convert to lowercase hex string
-        return byteValue.ToString("x2");
+        // Calculate FNV-1a hash
+        uint hash = FNV_OFFSET_BASIS;
+        var bytes = Encoding.UTF8.GetBytes(input);
+        
+        foreach (byte b in bytes)
+        {
+            hash ^= b;
+            hash *= FNV_PRIME;
+        }
+        
+        // Convert to hex string of desired length
+        var hashBytes = BitConverter.GetBytes(hash);
+        var hexString = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+        
+        // Take the first 'length' characters for the hash
+        return hexString.Substring(0, length);
     }
 
 }

@@ -118,15 +118,16 @@ To enable hash-based shortening for unique truncated slugs:
 var config = new SlugHelperConfiguration
 {
     MaximumLength = 12,
-    EnableHashedShortening = true
+    EnableHashedShortening = true,
+    HashLength = 4  // Use 4-character hash for better collision resistance
 };
 
 var helper = new SlugHelper(config);
 
 // These will produce different results despite similar input
-Console.WriteLine(helper.GenerateSlug("The very long name liga"));     // "the-very-54"
-Console.WriteLine(helper.GenerateSlug("The very long name liga (W)")); // "the-very-a2"
-Console.WriteLine(helper.GenerateSlug("The very long name liga (M)")); // "the-very-0a"
+Console.WriteLine(helper.GenerateSlug("The very long name liga"));     // "the-v-2a4b"
+Console.WriteLine(helper.GenerateSlug("The very long name liga (W)")); // "the-v-8f3c"
+Console.WriteLine(helper.GenerateSlug("The very long name liga (M)")); // "the-v-d1e7"
 ```
 
 The following options can be configured with the `SlugHelperConfiguration`:
@@ -235,12 +236,35 @@ This will limit the length of the generated slug to be a maximum of the number o
 
 ### `EnableHashedShortening`
 
-When enabled, slugs that exceed `MaximumLength` will be shortened with a hash postfix to ensure uniqueness. The hash postfix is a 2-character suffix derived from the full slug before truncation. This prevents different inputs from producing identical shortened slugs.
+When enabled, slugs that exceed `MaximumLength` will be shortened with a hash postfix to ensure uniqueness. The hash postfix is derived from the full slug before truncation using a deterministic FNV-1a hash algorithm. This prevents different inputs from producing identical shortened slugs.
 
 For example, when `MaximumLength` is 12:
 - `"The very long name liga"` becomes `"the-very-54"` (instead of `"the-very-lon"`)
 - `"The very long name liga (W)"` becomes `"the-very-a2"` (instead of `"the-very-lon"`)
 
-The hash postfix format is `"-XX"` where `XX` is a 2-character lowercase hexadecimal hash. If `MaximumLength` is too small to accommodate the hash postfix (less than 4 characters), it will fall back to simple truncation.
+The hash postfix format is `"-XX"` where `XX` is a lowercase hexadecimal hash. The hash length can be configured using `HashLength`. If `MaximumLength` is too small to accommodate the hash postfix, it will fall back to simple truncation.
 
 - Default value: `false`
+
+### `HashLength`
+
+Controls the length of the hash postfix when `EnableHashedShortening` is enabled. Valid values are 2-6 characters. Higher values provide better collision resistance but use more characters from the maximum length.
+
+- 2 characters: 256 possible values (good for small sets)
+- 4 characters: 65,536 possible values (recommended for most use cases)
+- 6 characters: 16,777,216 possible values (best collision resistance)
+
+For example:
+```csharp
+var config = new SlugHelperConfiguration
+{
+    MaximumLength = 15,
+    EnableHashedShortening = true,
+    HashLength = 4  // Use 4-character hash for better collision resistance
+};
+
+var helper = new SlugHelper(config);
+Console.WriteLine(helper.GenerateSlug("The very long name liga")); // "the-very-2a4b"
+```
+
+- Default value: `2`
