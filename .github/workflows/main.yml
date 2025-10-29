@@ -61,7 +61,7 @@ jobs:
     if: (inputs.environment == 'Production') || (inputs.environment == 'PreRelease')
     steps:
     - uses: actions/checkout@v5
-    - uses: actions/download-artifact@v5
+    - uses: actions/download-artifact@v6
       with:
         name: uploads
         path: ${{ github.workspace}}/artifact/
