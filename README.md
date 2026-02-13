@@ -215,3 +215,36 @@ Specifying the `DeniedCharactersRegex` option will disable the character removal
 This will limit the length of the generated slug to be a maximum of the number of chars given by the parameter. If the truncation happens in a way that a trailing `-` is left, it will be removed.
 
 - Default value: `null`
+
+### `TrimChars`, `TrimEndChars`, `TrimStartChars`
+
+Trim options to remove characters from the input before replacements and character filtering. This is useful to prevent generated slug to start/end with certain characters like dot.
+
+- Options
+  - `TrimChars` — characters to trim from both ends (behaves like `string.Trim(char[])`).
+  - `TrimEndChars` — characters to trim from the end (behaves like `string.TrimEnd(char[])`).
+  - `TrimStartChars` — characters to trim from the start (behaves like `string.TrimStart(char[])`).
+
+- Default value: all three are empty arrays (no extra trimming).
+
+- Example:
+
+```csharp
+var helper = new SlugHelper(new SlugHelperConfiguration
+{
+    TrimChars = ['.']
+});
+Console.WriteLine(helper.GenerateSlug(".hello world.")); // "hello-world"
+
+helper = new SlugHelper(new SlugHelperConfiguration
+{
+    TrimEndChars = ['.']
+});
+Console.WriteLine(helper.GenerateSlug(".hello world.")); // ".hello-world"
+
+helper = new SlugHelper(new SlugHelperConfiguration
+{
+    TrimStartChars = ['.']
+});
+Console.WriteLine(helper.GenerateSlug(".hello world.")); // "hello-world."
+```
