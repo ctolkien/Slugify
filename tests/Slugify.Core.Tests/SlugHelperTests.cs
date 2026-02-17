@@ -514,6 +514,51 @@ public class SlugHelperTest
 
     [Theory]
     [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestTrimmingEndChars(ISlugHelper helper)
+    {
+        const string original = "hello._world._";
+        const string expected = "hello._world";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            TrimEndChars = [ '.', '_' ],
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestTrimmingStartChars(ISlugHelper helper)
+    {
+        const string original = "._hello._world";
+        const string expected = "hello._world";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            TrimStartChars = [ '.', '_' ],
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+    
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
+    public void TestTrimmingChars(ISlugHelper helper)
+    {
+        const string original = "._hello._world._";
+        const string expected = "hello._world";
+
+        helper.Config = new SlugHelperConfiguration
+        {
+            TrimChars = [ '.', '_' ],
+        };
+
+        Assert.Equal(expected, helper.GenerateSlug(original));
+    }
+
+    [Theory]
+    [MemberData(nameof(GenerateStandardSluggers))]
     public void TestReplacementWithEmptyStringThenCollapsing(ISlugHelper helper)
     {
         const string original = "hello & world";
