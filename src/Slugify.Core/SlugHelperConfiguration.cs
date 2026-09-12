@@ -62,6 +62,21 @@ public class SlugHelperConfiguration
     public bool TrimWhitespace { get; set; } = true;
 
     /// <summary>
+    /// List of characters to be trimmed (removed from both ends) from generated slug
+    /// </summary>
+    public char[] TrimChars { get; set; } = [];
+
+    /// <summary>
+    /// List of characters to be trimmed from end of the generated slug
+    /// </summary>
+    public char[] TrimEndChars { get; set; } = [];
+
+    /// <summary>
+    /// List of characters to be trimmed from start of the generated slug
+    /// </summary>
+    public char[] TrimStartChars { get; set; } = [];
+    
+    /// <summary>
     /// Represents the maximum length of the slug. If the slug is longer than this value, it will be truncated.
     /// </summary>
     public int? MaximumLength { get; set; }
