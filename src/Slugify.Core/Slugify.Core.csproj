@@ -2,7 +2,6 @@
   <PropertyGroup>
     <AssemblyTitle>Slugify Core</AssemblyTitle>
 
-    <VersionPrefix>5.1.2</VersionPrefix>
     <TargetFramework>netstandard2.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -40,8 +39,6 @@ With default settings, you will get an hyphenized, lowercase, alphanumeric versi
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <EnableNETAnalyzers>True</EnableNETAnalyzers>
-    <AssemblyVersion>5.1.2.1</AssemblyVersion>
-    <FileVersion>5.1.2.1</FileVersion>
   </PropertyGroup>
 
   <!-- Deterministic builds -->
